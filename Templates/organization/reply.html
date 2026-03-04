@@ -1,0 +1,44 @@
+{% extends "organization/common_trash.html" %}
+
+{% block content %}
+<br><br><br>
+<style>
+    .container {
+        width: 50%;
+        margin: auto;
+        font-family: Arial, sans-serif;
+    }
+    textarea {
+        width: 100%;
+        height: 100px;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+    button {
+        background-color: green;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+</style>
+
+<div class="container">
+    <h2>Reply to Collector</h2>
+    <p><strong>Request ID:</strong> {{ request_obj.id }}</p>
+    <p><strong>Waste Type:</strong> {{ request_obj.waste_type }}</p>
+    <p><strong>Collector Name:</strong> {{ request_obj.collector.firstname }} {{ request_obj.collector.lastname }}</p>
+
+
+    <form method="POST">
+        {% csrf_token %}
+        <textarea name="reply_message" placeholder="Write your reply here..."></textarea>
+        <br><br>
+        <button type="submit">Send Reply</button>
+    </form>
+</div>
+<br><br>
+
+{% endblock %}

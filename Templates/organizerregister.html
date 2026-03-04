@@ -1,0 +1,77 @@
+{% extends "common.html" %}
+
+{% block content %}
+<style>
+    .contact-one__form-input-box input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    background-color: antiquewhite;
+    box-sizing: border-box;
+}
+
+.contact-one__form-input-box input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+</style>
+<br>
+<h1 style="text-align: center;">Organizer Register Form</h1>
+
+    <section class="contact-one contact-page">
+        <div class="container" style="margin-left: 30%;">
+           
+                <div class="col-xl-6 col-lg-6">
+                    <div class="contact-one__right">
+                        <!-- Registration Form -->
+                        <form method="POST">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-xl-6 col-lg-6 col-md-6">
+                                    <div class="contact-one__form-input-box">
+                                        <input type="text" placeholder="First Name" name="firstname" required>
+                                    </div>
+                                </div>
+                                <br>
+
+                                <div class="col-xl-6 col-lg-6 col-md-6">
+                                    <div class="contact-one__form-input-box">
+                                        <input type="text" placeholder="Last Name" name="lastname" required>
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="col-xl-6 col-lg-6 col-md-6">
+                                    <div class="contact-one__form-input-box">
+                                        <input type="email" placeholder="Email Address" name="email" required>
+                                    </div>
+                                </div>
+                                <br>
+                            
+                                <div class="col-xl-6 col-lg-6 col-md-6">
+                                    <div class="contact-one__form-input-box">
+                                        <input type="password" placeholder="Password" name="password" required>
+                                    </div>
+                                </div>
+                                <br>
+                            </div>
+                            <div class="row">
+                                <div class="col-xl-12">
+                                    <div class="contact-one__btn-box">
+                                        <button type="submit" class="thm-btn contact-one__btn">Register</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            <!-- </div> -->
+        </div>
+    </section>
+    <!-- Contact One End -->
+
+{% endblock %}

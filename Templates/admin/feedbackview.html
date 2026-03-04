@@ -1,0 +1,31 @@
+{% extends "admin/common_base.html" %}
+
+{% block content %}
+<br><br>
+<div class="container mt-4">
+    <h2 class="text-center">📝 User Feedback</h2>
+    <br>
+
+    <div class="row">
+        {% for feedback in fed %}
+            <div class="col-md-4">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title"><strong>{{ feedback.user.firstname }}</strong></h5>
+                        <h6 class="text-muted">📅 {{ feedback.created_date|date:"d M Y, H:i" }}</h6>
+                        <p class="card-text">🗨️ {{ feedback.feedback }}</p>
+                        <a href="/deletefed/?id={{ feedback.id }}" class="btn btn-danger btn-sm">
+                            🗑 Delete
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12 text-center">
+                <p class="text-muted">No feedback available.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+<br><br>
+{% endblock %}

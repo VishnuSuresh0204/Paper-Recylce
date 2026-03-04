@@ -1,0 +1,73 @@
+{% extends "admin/common_base.html" %}
+
+{% block content %}
+
+<style>
+    table {
+        width: 98%;
+        border-collapse: collapse;
+        margin: 10px auto;
+    }
+    table, th, td {
+        border: 1px solid black;
+    }
+    th, td {
+        padding: 10px;
+        text-align: left;
+    }
+    th {
+        text-align: center;
+        background-color: #f0eded;
+    }
+</style>
+
+<h1 style="text-align: center;">Organizer Details</h1>
+<br>
+<table>
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for organizer in orgz %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ organizer.firstname }}</td>
+            <td>{{ organizer.lastname }}</td>
+            <td>{{ organizer.email }}</td>
+            <td>{{ organizer.status }}</td>
+            <td style="text-align: center;">
+                {% if organizer.status == "pending" %}
+                <!-- Approve Button (Link styled as a button) -->
+                <a href="/accept/?id={{ organizer.id }}" 
+                   style="display: inline-block; background-color: green; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; cursor: pointer;">
+                    Approve
+                </a>
+            
+                <a href="/reject/?id={{ organizer.id }}" 
+                   style="display: inline-block; background-color: red; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; cursor: pointer;">
+                    Reject
+                </a>
+                {% else %}
+                <span style="color: gray;">No Actions</span>
+                {% endif %}
+            </td>
+            
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6">No organizers found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<br>
+<br>
+
+{% endblock %}

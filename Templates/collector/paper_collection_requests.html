@@ -1,0 +1,83 @@
+{% extends "collector/common.html" %}
+
+{% block content %}
+<main class="container py-4">
+
+    <h1 class="text-center text-primary mb-4">Paper Collection Requests</h1>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle">
+            <thead class="table-dark text-center">
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Request Date</th>
+                    <th>Address</th>
+                    <th>House No</th>
+                    <th>Location</th>
+                    <th>Phone</th>
+                    <th>Waste Type</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for request in req %}
+                <tr class="text-center">
+                    <td>{{ request.id }}</td>
+                    <td>{{ request.name }}</td>
+                    <td>{{ request.request_date }}</td>
+                    <td>{{ request.address }}</td>
+                    <td>{{ request.house_number }}</td>
+                    <td>{{ request.location }}</td>
+                    <td>{{ request.phone_number }}</td>
+                    <td>{{ request.waste_type }}</td>
+                    <td>{{ request.description }}</td>
+                    <td>
+                        <span class="badge 
+                            {% if request.status == 'Pending' %}
+                                bg-warning text-dark
+                            {% elif request.status == 'approved' %}
+                                bg-success
+                            {% elif request.status == 'Dated' %}
+                                bg-info
+                            {% else %}
+                                bg-secondary
+                            {% endif %}
+                        ">
+                            {{ request.assign_status }}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="d-grid gap-2">
+                            {% if request.assign_status != 'Assigned' %}
+                            <!-- Assign to Organizer -->
+                            <form method="POST" action="{% url 'assign_to_organizer' request.id %}">
+                                {% csrf_token %}
+                                <div class="mb-2">
+                                    <label class="form-label mb-1" style="font-size: 0.8rem;">Assign Organizer:</label>
+                                    <select name="organizer_id" class="form-select form-select-sm" required>
+                                        {% for organizer in organizers %}
+                                        <option value="{{ organizer.id }}">{{ organizer.firstname }} {{ organizer.lastname }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-purple btn-sm" style="background-color: purple;">Assign</button>
+                            </form>
+                            {% endif %}
+                        </div>
+                        
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="11" class="text-center text-muted py-4">No requests found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</main>
+{% endblock %}

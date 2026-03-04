@@ -1,0 +1,51 @@
+{% extends "organization/common_trash.html" %}
+
+{% block content %}
+<br>
+<h1 style="text-align: center;">Add Recycle Product</h1>
+
+<section class="contact-one contact-page">
+    <div class="container" style="margin-left: 30%;">
+
+        <div class="col-xl-6 col-lg-6">
+            <div class="contact-one__right">
+                <!-- Product Add Form -->
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12">
+                            <div class="contact-one__form-input-box">
+                                <input type="text" placeholder="Product Name" name="product_name" id="product_name" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12">
+                            <div class="contact-one__form-input-box">
+                                <textarea placeholder="Product Description" name="product_description" id="product_description" class="form-control"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6">
+                            <div class="contact-one__form-input-box">
+                                <input type="number" placeholder="Price" name="price" id="price" step="0.01" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6">
+                            <div class="contact-one__form-input-box">
+                                <input type="file" name="image" id="image" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xl-12">
+                            <div class="contact-one__btn-box">
+                                <button type="submit" class="thm-btn contact-one__btn">Add Product</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}

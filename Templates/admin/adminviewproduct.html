@@ -1,0 +1,72 @@
+
+{% extends "admin/common_base.html" %}
+{% block content %}
+  
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product List</title>
+    <style>
+        table {
+            width: 98%;
+            margin-left: 10px;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .actions button {
+            padding: 5px 10px;
+            margin: 2px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center;">Admin Product List</h1>
+    <br>
+    <br>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Product Name</th>
+                <th>Description</th>
+                <th>image</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in pr %}
+                <tr>
+                    <td>{{ product.id }}</td>
+                    <td>{{ product.product_name }}</td>
+                    <td>{{ product.description }}</td>
+                    <td>
+                        <img src="{{ product.image.url }}" alt="{{ product.product_name }}" style="width: 100px; height: auto;">
+                    </td>
+                                        <td>${{ product.price }}</td>
+                    
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="7">No products available.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
+<br><br>
+{% endblock  %}

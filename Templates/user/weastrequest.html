@@ -1,0 +1,97 @@
+{% extends "user/common_user.html" %}
+
+{% block content %}
+
+    <h1 style="text-align: center;">Submit Paper Collection Request</h1>
+    <br>
+    <br>
+    <!-- Waste Collection Request Start -->
+    <section class="waste-request-page">
+        <div class="container" style="margin-left: 30%;">
+            <div class="row">
+                <div class="col-xl-6 col-lg-6">
+                    <div class="waste-request-page__right">
+                        <!-- Waste Collection Form -->
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-xl-10 col-lg-6 col-md-6">
+                                    <div class="contact-one__form-input-box">
+                                        <label for="name">Name:</label>
+                                        <input type="text" name="name" placeholder="Your Name" required>
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="col-xl-10 col-lg-6 col-md-6">
+                                    <div class="contact-one__form-input-box">
+                                        <label for="address">Address:</label>
+                                        <textarea name="address" placeholder="Your Address" required></textarea>
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="col-xl-10 col-lg-6 col-md-6">
+                                    <div class="contact-one__form-input-box">
+                                        <label for="house_number">House Number:</label>
+                                        <input type="text" name="house_number" placeholder="House Number" required>
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="col-xl-10 col-lg-6 col-md-6">
+                                    <div class="contact-one__form-input-box">
+                                        <label for="location">Location:</label>
+                                        <input type="text" name="location" placeholder="Location" required>
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="col-xl-10 col-lg-6 col-md-6">
+                                    <div class="contact-one__form-input-box">
+                                        <label for="phone_number">Phone Number:</label>
+                                        <input type="text" name="phone_number" placeholder="Phone Number" maxlength="10" required>
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="col-xl-10 col-lg-6 col-md-6">
+                                    <div class="contact-one__form-input-box">
+                                        <label for="waste_type">Waste Type:</label>
+                                        <select name="waste_type" required class="form-control">
+                                            <option value="" disabled selected>Select Waste Type</option>
+                                            <option value="paper">Paper</option>
+                                            <!-- <option value="plastic">Plastic</option>
+                                            <option value="glass">Glass</option>
+                                            <option value="metal">Metal</option>
+                                            <option value="electronic">Electronic Waste</option>
+                                            <option value="organic">Organic Waste</option>
+                                            <option value="textile">Textile Waste</option>
+                                            <option value="medical">Medical Waste</option>
+                                            <option value="hazardous">Hazardous Waste</option>
+                                            <option value="construction">Construction Waste</option> -->
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <br>
+                                <div class="col-xl-10 col-lg-6 col-md-6">
+                                    <div class="contact-one__form-input-box">
+                                        <label for="description">Description (optional):</label>
+                                        <textarea name="description" placeholder="Additional details (optional)"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xl-12">
+                                    <div class="waste-request-form__btn-box">
+                                        <button type="submit" class="thm-btn waste-request-form__btn">Submit Request</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Waste Collection Request End -->
+    <br>
+    <br>
+
+{% endblock %}

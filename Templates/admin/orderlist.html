@@ -1,0 +1,52 @@
+{% extends "admin/common_base.html" %}
+
+{% block content %}
+<br><br>
+<div class="container mt-4">
+    <h2 class="text-center">📦 Order Details</h2>
+    <br><br>
+    <div class="row">
+        {% for order in fuu %}
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Order ID: {{ order.id }}</h5>
+                    <p class="card-text"><strong>User:</strong> {{ order.name }}</p>
+                    <p><strong>Phone:</strong> {{ order.phone }}</p>
+                    <p><strong>Address:</strong> {{ order.address }}</p>
+                    <p><strong>City:</strong> {{ order.city }}</p>
+                    <p><strong>Price:</strong> ${{ order.product.price }}</p>
+                    <p><strong>State:</strong> {{ order.state }}</p>
+
+                    <!-- Order Status with Dynamic Badge -->
+                    <span class="badge 
+                        {% if order.status == 'Completed' %} bg-success
+                        {% elif order.status == 'Pending' %} bg-warning
+                        {% else %} bg-secondary
+                        {% endif %}
+                    ">
+                        🏷 Status: {{ order.status }}
+                    </span>
+
+                    <!-- Payment Status with Dynamic Badge -->
+                    <span class="badge 
+                        {% if order.payment_status == 'Paid' %} bg-info
+                        {% else %} bg-danger
+                        {% endif %}
+                    ">
+                        💳 Payment: {{ order.payment_status }}
+                    </span>
+
+                    <p class="mt-2"><strong>Order Date:</strong> {{ order.order_date }}</p>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center">
+            <p class="text-muted">No orders found.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+<br><br>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends 'admin/common_base.html' %}
+
+{% block content %}
+<main class="content container mt-4">
+    <h2 class="text-center mb-4">Collector List</h2>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead class="table-primary text-center">
+                <tr>
+                    <th>ID</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Email</th>
+                    <th>Id Proof</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody class="text-center">
+                {% for collector in collectors %}
+                <tr>
+                    <td>{{ collector.id }}</td>
+                    <td>{{ collector.firstname }}</td>
+                    <td>{{ collector.lastname }}</td>
+                    <td>{{ collector.email }}</td>
+                    <td>
+                        {% if collector.idproof %}
+                        <a href="{{ collector.idproof.url }}" target="_blank" class="btn btn-primary">View ID Proof</a>
+                        {% else %}
+                        No ID Proof
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        <span
+                            class="badge {% if collector.status == 'approved' %} bg-success {% elif collector.status == 'pending' %} bg-warning {% else %} bg-danger {% endif %}">
+                            {{ collector.status|title }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if collector.status == "pending" %}
+                        <a href="{% url 'accept_collector' collector.id %}" class="btn btn-success btn-sm">Approve</a>
+                        <a href="{% url 'reject_collector' collector.id %}" class="btn btn-danger btn-sm">Reject</a>
+                        {% else %}
+                        <span class="text-muted">Completed</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</main>
+{% endblock %}
