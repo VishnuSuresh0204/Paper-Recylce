@@ -6,7 +6,7 @@
 
 <style>
     .request-card {
-        transition: 0.3s ease;
+        transition: .3s ease;
     }
 
     .request-card:hover {
@@ -14,7 +14,7 @@
     }
 
     .status-pill {
-        font-size: 0.75rem;
+        font-size: .75rem;
         padding: 5px 12px;
         border-radius: 20px;
     }
@@ -26,132 +26,187 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        font-size: 0.75rem;
+        font-size: .75rem;
         font-weight: bold;
     }
 </style>
 
 <div class="container mt-4">
-    <div class="text-center mb-4">
-        <h2 class="fw-bold text-primary"><i class="fas fa-truck"></i> My Assigned Requests</h2>
-        <p class="text-muted">Track and update your waste collection status</p>
-    </div>
 
-    {% if messages %}
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-    {% endif %}
-
-    <div class="row g-4">
-        {% for waste_item in req %}
-        <div class="col-md-6 col-lg-4 request-card">
-            <div class="card shadow rounded-4 h-100
-                {% if waste_item.status|lower == 'assigned' %}border-start border-4 border-primary
-                {% elif waste_item.status|lower == 'reached' %}border-start border-4 border-info
-                {% elif waste_item.status|lower == 'picked up' %}border-start border-4 border-success
-                {% elif waste_item.status|lower == 'paid' %}border-start border-4 border-warning
-                {% elif waste_item.status|lower == 'rejected' %}border-start border-4 border-danger
-                {% endif %}">
-                <div class="card-body d-flex flex-column">
-
-                    <h5 class="card-title fw-semibold mb-3">
-                        <i class="fas fa-user text-primary"></i> {{ waste_item.name }}
-                    </h5>
-
-                    <p class="mb-1"><i class="fas fa-calendar text-muted"></i> {{ waste_item.request_date }}</p>
-                    <p class="mb-1"><i class="fas fa-home text-secondary"></i> {{ waste_item.address }}, No: {{
-                        waste_item.house_number }}</p>
-                    <p class="mb-1"><i class="fas fa-map-marker-alt text-danger"></i> {{ waste_item.location }}</p>
-                    <p class="mb-1"><i class="fas fa-phone text-success"></i> {{ waste_item.phone_number }}</p>
-                    <p class="mb-2"><i class="fas fa-recycle text-info"></i> {{ waste_item.waste_type }}</p>
-                    {% if waste_item.description %}
-                    <p class="text-muted small mb-2"><i class="fas fa-sticky-note"></i> {{ waste_item.description }}</p>
-                    {% endif %}
-
-                    <!-- Status Badge -->
-                    <div class="mb-2">
-                        <span class="badge status-pill
-                            {% if waste_item.status|lower == 'assigned' %} bg-primary
-                            {% elif waste_item.status|lower == 'reached' %} bg-info
-                            {% elif waste_item.status|lower == 'picked up' %} bg-success
-                            {% elif waste_item.status|lower == 'paid' %} bg-warning text-dark
-                            {% elif waste_item.status|lower == 'rejected' %} bg-danger
-                            {% else %} bg-secondary {% endif %}">
-                            {{ waste_item.status }}
-                        </span>
-                    </div>
-
-                    <hr>
-
-                    <!-- Progress Tracker -->
-                    <div class="d-flex align-items-center justify-content-between text-center small mb-3">
-                        <div>
-                            <div
-                                class="step-circle {% if waste_item.status|lower == 'assigned' or waste_item.status|lower == 'reached' or waste_item.status|lower == 'picked up' or waste_item.status|lower == 'paid' %}bg-primary text-white{% else %}bg-light text-muted{% endif %}">
-                                1</div>
-                            <div class="mt-1 text-nowrap">Assigned</div>
-                        </div>
-                        <div
-                            style="flex:1;border-top:2px dashed #ccc;margin-bottom:18px;margin-left:4px;margin-right:4px;">
-                        </div>
-                        <div>
-                            <div
-                                class="step-circle {% if waste_item.status|lower == 'reached' or waste_item.status|lower == 'picked up' or waste_item.status|lower == 'paid' %}bg-info text-white{% else %}bg-light text-muted{% endif %}">
-                                2</div>
-                            <div class="mt-1 text-nowrap">Reached</div>
-                        </div>
-                        <div
-                            style="flex:1;border-top:2px dashed #ccc;margin-bottom:18px;margin-left:4px;margin-right:4px;">
-                        </div>
-                        <div>
-                            <div
-                                class="step-circle {% if waste_item.status|lower == 'picked up' or waste_item.status|lower == 'paid' %}bg-success text-white{% else %}bg-light text-muted{% endif %}">
-                                3</div>
-                            <div class="mt-1 text-nowrap">Picked Up</div>
-                        </div>
-                    </div>
-
-                    <!-- Action Buttons -->
-                    <div class="mt-auto d-grid gap-2">
-                        {% if waste_item.status|lower == 'assigned' %}
-                        <a href="/mark_reached/?id={{ waste_item.id }}" class="btn btn-info text-white btn-sm">
-                            <i class="fas fa-location-arrow"></i> Mark as Reached
-                        </a>
-                        {% elif waste_item.status|lower == 'reached' %}
-                        <a href="/wepicked/?id={{ waste_item.id }}" class="btn btn-success btn-sm">
-                            <i class="fas fa-box"></i> Mark as Picked Up
-                        </a>
-                        {% elif waste_item.status|lower == 'picked up' %}
-                        <div class="alert alert-success text-center small p-2 mb-0">
-                            <i class="fas fa-hourglass-half"></i> Awaiting payment from organiser
-                        </div>
-                        {% elif waste_item.status|lower == 'paid' %}
-                        <div class="alert alert-warning text-center small p-2 mb-0">
-                            <i class="fas fa-money-bill-wave"></i> Payment Received — Complete!
-                        </div>
-                        {% endif %}
-                    </div>
-
-                </div>
-            </div>
-        </div>
-        {% empty %}
-        <div class="col-12">
-            <div class="alert alert-info text-center p-5">
-                <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
-                No requests assigned to you yet.
-            </div>
-        </div>
-        {% endfor %}
-    </div>
+<div class="text-center mb-4">
+<h2 class="fw-bold text-primary">
+<i class="fas fa-truck"></i> My Assigned Requests
+</h2>
+<p class="text-muted">Track and update your waste collection status</p>
 </div>
+
+{% if messages %}
+<div class="row justify-content-center">
+<div class="col-md-8">
+{% for message in messages %}
+<div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+{{ message }}
+<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+{% endfor %}
+</div>
+</div>
+{% endif %}
+
+<div class="row g-4">
+
+{% for waste_item in req %}
+
+<div class="col-md-6 col-lg-4 request-card">
+
+<div class="card shadow rounded-4 h-100
+
+{% if waste_item.status|default:''|lower == 'assigned' %}
+border-start border-4 border-primary
+{% elif waste_item.status|default:''|lower == 'reached' %}
+border-start border-4 border-info
+{% elif waste_item.status|default:''|lower == 'picked up' %}
+border-start border-4 border-success
+{% elif waste_item.status|default:''|lower == 'paid' %}
+border-start border-4 border-warning
+{% elif waste_item.status|default:''|lower == 'rejected' %}
+border-start border-4 border-danger
+{% endif %}
+">
+
+<div class="card-body d-flex flex-column">
+
+<h5 class="card-title fw-semibold mb-3">
+<i class="fas fa-user text-primary"></i> {{ waste_item.name }}
+</h5>
+
+<p class="mb-1">
+<i class="fas fa-calendar text-muted"></i> {{ waste_item.request_date }}
+</p>
+
+<p class="mb-1">
+<i class="fas fa-home text-secondary"></i> {{ waste_item.address }}, No: {{ waste_item.house_number }}
+</p>
+
+<p class="mb-1">
+<i class="fas fa-map-marker-alt text-danger"></i> {{ waste_item.location }}
+</p>
+
+<p class="mb-1">
+<i class="fas fa-phone text-success"></i> {{ waste_item.phone_number }}
+</p>
+
+<p class="mb-2">
+<i class="fas fa-recycle text-info"></i> {{ waste_item.waste_type }}
+</p>
+
+{% if waste_item.description %}
+<p class="text-muted small mb-2">
+<i class="fas fa-sticky-note"></i> {{ waste_item.description }}
+</p>
+{% endif %}
+
+<!-- STATUS -->
+<div class="mb-2">
+<span class="badge status-pill
+
+{% if waste_item.status|default:''|lower == 'assigned' %}
+bg-primary
+{% elif waste_item.status|default:''|lower == 'dated' %}
+bg-info
+{% elif waste_item.status|default:''|lower == 'reached' %}
+bg-info
+{% elif waste_item.status|default:''|lower == 'picked up' %}
+bg-success
+{% elif waste_item.status|default:''|lower == 'paid' %}
+bg-warning text-dark
+{% elif waste_item.status|default:''|lower == 'rejected' %}
+bg-danger
+{% else %}
+bg-secondary
+{% endif %}
+">
+
+{{ waste_item.status|default:"Pending" }}
+
+</span>
+
+{% if waste_item.pickup_date %}
+<span class="d-block small text-muted mt-1">
+<i class="far fa-clock me-1"></i>Scheduled: {{ waste_item.pickup_date|date:"M d" }}
+</span>
+{% endif %}
+</div>
+
+<hr>
+
+<!-- ACTIONS -->
+<div class="mt-auto d-grid gap-2">
+
+{% if waste_item.status|default:''|lower == 'assigned' or waste_item.status|default:''|lower == 'approved' or waste_item.status|default:''|lower == 'pending' %}
+
+<form method="POST" action="{% url 'update_pickup_date' waste_item.id %}" class="bg-light p-2 rounded border">
+{% csrf_token %}
+<label class="form-label small fw-bold mb-1">Set Pickup Date</label>
+
+<div class="input-group input-group-sm mb-2">
+<input type="date" name="pickup_date" class="form-control" required>
+<button type="submit" class="btn btn-primary">
+<i class="fas fa-calendar-check"></i>
+</button>
+</div>
+</form>
+
+<a href="/mark_reached/?id={{ waste_item.id }}" class="btn btn-outline-info btn-sm">
+Directly Mark Reached
+</a>
+
+{% elif waste_item.status|default:''|lower == 'dated' %}
+
+<a href="/mark_reached/?id={{ waste_item.id }}" class="btn btn-info text-white btn-sm py-2">
+<i class="fas fa-location-arrow me-1"></i> Mark as Reached
+</a>
+
+{% elif waste_item.status|default:''|lower == 'reached' %}
+
+<a href="/wepicked/?id={{ waste_item.id }}" class="btn btn-success btn-sm py-2">
+<i class="fas fa-box me-1"></i> Mark as Picked Up
+</a>
+
+{% elif waste_item.status|default:''|lower == 'picked up' %}
+
+<div class="alert alert-success text-center small p-2 mb-0">
+<i class="fas fa-hourglass-half me-1"></i> Awaiting payment from organiser
+</div>
+
+{% elif waste_item.status|default:''|lower == 'paid' %}
+
+<div class="alert alert-warning text-center small p-2 mb-0 border-warning">
+<i class="fas fa-money-bill-wave me-1"></i> Payment Received — Complete!
+</div>
+
+{% endif %}
+
+</div>
+
+</div>
+</div>
+</div>
+
+{% empty %}
+
+<div class="col-12">
+<div class="alert alert-info text-center p-5">
+<i class="fas fa-inbox fa-2x mb-2 d-block"></i>
+No requests assigned to you yet.
+</div>
+</div>
+
+{% endfor %}
+
+</div>
+</div>
+
 <br><br>
+
 {% endblock %}
