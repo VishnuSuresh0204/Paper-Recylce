@@ -64,7 +64,6 @@ urlpatterns = [
     path('rejectwaste_adq/', views.rejectwaste_adq),
     path('delete/', views.delete),
     path('approvepaper/', views.approvepaper),
-    path('deletefed/', views.deletefed),
     path('ad/', views.ad),
     path('editproduct/', views.editproduct, name='editproduct'),
 

@@ -854,12 +854,10 @@ def adminorderlist(request):
     return render(request,'admin/orderlist.html',{'fuu':fuu})
 
 def adminfeedbacklist(request):
-    general_feedback = Feedback.objects.all().order_by('-created_date')
     request_feedback = RequestFeedback.objects.all().select_related('request', 'user').order_by('-created_date')
     order_feedback = OrderFeedback.objects.all().select_related('order', 'user').order_by('-created_date')
     
     return render(request, 'admin/feedbackview.html', {
-        'general_feedback': general_feedback,
         'request_feedback': request_feedback,
         'order_feedback': order_feedback
     })
@@ -932,12 +930,6 @@ def delete(request):
     delete=ProductReview.objects.filter(id=id).delete()
     messages.info(request,"Deteted")
     return redirect('/orgreviewlist')
-
-def deletefed(request):
-    id = request.GET.get('id')
-    Feedback.objects.filter(id=id).delete()
-    messages.success(request, "General feedback removed successfully.")
-    return redirect('/adminfeedbacklist/')
 
 def admin_delete_request_feedback(request, id):
     RequestFeedback.objects.filter(id=id).delete()

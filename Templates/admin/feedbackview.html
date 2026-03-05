@@ -100,12 +100,7 @@
     <!-- Custom Tabs -->
     <ul class="nav nav-tabs nav-tabs-custom justify-content-center" id="feedbackTabs" role="tablist">
         <li class="nav-item">
-            <a class="nav-link active" id="general-tab" data-bs-toggle="tab" href="#general" role="tab">
-                <i class="fas fa-bullhorn me-2"></i>General
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" id="request-tab" data-bs-toggle="tab" href="#request" role="tab">
+            <a class="nav-link active" id="request-tab" data-bs-toggle="tab" href="#request" role="tab">
                 <i class="fas fa-truck-loading me-2"></i>Service Requests
             </a>
         </li>
@@ -117,49 +112,8 @@
     </ul>
 
     <div class="tab-content" id="feedbackTabsContent">
-        <!-- General Feedback -->
-        <div class="tab-pane fade show active" id="general" role="tabpanel">
-            <div class="row g-4">
-                {% for feedback in general_feedback %}
-                <div class="col-md-6 col-lg-4">
-                    <div class="card feedback-card shadow-sm h-100">
-                        <div class="card-body p-4 d-flex flex-column">
-                            <div class="d-flex align-items-center mb-3">
-                                <div class="user-avatar me-3">
-                                    {{ feedback.user.firstname|first|upper }}
-                                </div>
-                                <div>
-                                    <h6 class="mb-0 fw-bold text-dark">{{ feedback.user.firstname }} {{
-                                        feedback.user.lastname }}</h6>
-                                    <span class="date-badge">
-                                        <i class="far fa-calendar-alt me-1"></i>{{ feedback.created_date|date:"d M Y" }}
-                                    </span>
-                                </div>
-                            </div>
-                            <p class="feedback-text mb-4 px-2">"{{ feedback.feedback }}"</p>
-                            <div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top">
-                                <span class="small text-muted"><i class="far fa-clock me-1"></i>{{
-                                    feedback.created_date|date:"H:i" }}</span>
-                                <a href="/deletefed/?id={{ feedback.id }}"
-                                    class="btn btn-sm btn-outline-danger border-0 rounded-pill px-3"
-                                    onclick="return confirm('Delete this general feedback?')">
-                                    <i class="fas fa-trash-alt me-1"></i>Delete
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% empty %}
-                <div class="col-12 py-5 text-center text-muted">
-                    <i class="fas fa-comment-slash fa-3x opacity-25 mb-3"></i>
-                    <p>No general feedback found</p>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-
         <!-- Request Feedback -->
-        <div class="tab-pane fade" id="request" role="tabpanel">
+        <div class="tab-pane fade show active" id="request" role="tabpanel">
             <div class="row g-4">
                 {% for feedback in request_feedback %}
                 <div class="col-md-6 col-lg-4">

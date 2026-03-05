@@ -85,10 +85,7 @@ class ProductReview(models.Model):
     review_text = models.TextField()
     review_date = models.DateTimeField(auto_now_add=True)
 
-class Feedback(models.Model):
-    user = models.ForeignKey(UserReg, on_delete=models.CASCADE)
-    feedback = models.TextField()
-    created_date = models.DateTimeField(auto_now_add=True)
+
 
 
 class RequestFeedback(models.Model):
