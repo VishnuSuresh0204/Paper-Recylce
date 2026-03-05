@@ -5,202 +5,258 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 <style>
-     .request-card {
-          transition: 0.3s ease;
-     }
+.request-card{
+transition:0.3s ease;
+}
+.request-card:hover{
+transform:translateY(-6px);
+}
 
-     .request-card:hover {
-          transform: translateY(-6px);
-     }
+.status-border-pending{border-left:5px solid #ffc107;}
+.status-border-assigned{border-left:5px solid #0d6efd;}
+.status-border-picked{border-left:5px solid #198754;}
+.status-border-approved{border-left:5px solid #20c997;}
+.status-border-rejected{border-left:5px solid #dc3545;}
 
-     .status-border-pending {
-          border-left: 5px solid #ffc107;
-     }
-
-     .status-border-assigned {
-          border-left: 5px solid #0d6efd;
-     }
-
-     .status-border-picked {
-          border-left: 5px solid #198754;
-     }
-
-     .status-border-approved {
-          border-left: 5px solid #20c997;
-     }
-
-     .status-border-rejected {
-          border-left: 5px solid #dc3545;
-     }
-
-     .badge-status {
-          font-size: 0.75rem;
-          padding: 6px 12px;
-     }
+.badge-status{
+font-size:0.75rem;
+padding:6px 12px;
+}
 </style>
 
 <div class="container mt-4">
 
-     <div class="text-center mb-4">
-          <h2 class="fw-bold text-primary">Waste Collection Requests</h2>
-          <p class="text-muted">Manage, Assign & Track Waste Pickup Requests</p>
-     </div>
+<div class="text-center mb-4">
+<h2 class="fw-bold text-primary">Waste Collection Requests</h2>
+<p class="text-muted">Manage, Assign & Track Waste Pickup Requests</p>
+</div>
 
-     <div class="row g-4" id="requestsContainer">
+<div class="row g-4" id="requestsContainer">
 
-          {% for waste_item in req %}
-          <div class="col-lg-4 col-md-6 request-card" data-name="{{ waste_item.name|lower }}"
-               data-location="{{ waste_item.location|lower }}" data-status="{{ waste_item.status|lower }}">
+{% for waste_item in req %}
 
-               <div class="card shadow h-100
-{% if waste_item.status|lower == 'pending' %}status-border-pending
-{% elif waste_item.status|lower == 'assigned' %}status-border-assigned
-{% elif waste_item.status|lower == 'picked up' %}status-border-picked
-{% elif waste_item.status|lower == 'approved & collected' %}status-border-approved
-{% elif waste_item.status|lower == 'rejected' %}status-border-rejected
-{% endif %}">
+<div class="col-lg-4 col-md-6 request-card"
+data-name="{{ waste_item.name|lower }}"
+data-location="{{ waste_item.location|lower }}"
+data-status="{{ waste_item.status|lower }}">
 
-                    <div class="card-body">
+<div class="card shadow h-100
 
-                         <h5 class="fw-semibold mb-2">
-                              <i class="fas fa-user text-primary"></i> {{ waste_item.name }}
-                         </h5>
+{% if waste_item.status|lower == 'pending' %}
+status-border-pending
+{% elif waste_item.status|lower == 'assigned' %}
+status-border-assigned
+{% elif waste_item.status|lower == 'picked up' %}
+status-border-picked
+{% elif waste_item.status|lower == 'approved & collected' %}
+status-border-approved
+{% elif waste_item.status|lower == 'rejected' %}
+status-border-rejected
+{% endif %}
+">
 
-                         <div class="small mb-3">
-                              <p class="mb-1"><strong>ID:</strong> #{{ waste_item.id }}</p>
-                              <p class="mb-1"><strong>Location:</strong> {{ waste_item.location }}</p>
-                              <p class="mb-1"><strong>Address:</strong> {{ waste_item.address }}, No: {{
-                                   waste_item.house_number }}</p>
-                              <p class="mb-1"><strong>Phone:</strong> {{ waste_item.phone_number }}</p>
-                              <p class="mb-1"><strong>Waste Type:</strong> {{ waste_item.waste_type }}</p>
-                         </div>
+<div class="card-body">
 
-                         <span class="badge badge-status
-{% if waste_item.status|lower == 'pending' %}bg-warning text-dark
-{% elif waste_item.status|lower == 'assigned' %}bg-primary
-{% elif waste_item.status|lower == 'picked up' or waste_item.status|lower == 'approved & collected' %}bg-success
-{% elif waste_item.status|lower == 'rejected' %}bg-danger
-{% else %}bg-secondary
-{% endif %}">
-                              {{ waste_item.status }}
-                         </span>
+<h5 class="fw-semibold mb-2">
+<i class="fas fa-user text-primary"></i> {{ waste_item.name }}
+</h5>
 
-                         <hr>
+<div class="small mb-3">
+<p class="mb-1"><strong>ID:</strong> #{{ waste_item.id }}</p>
+<p class="mb-1"><strong>Location:</strong> {{ waste_item.location }}</p>
+<p class="mb-1"><strong>Address:</strong> {{ waste_item.address }}, No: {{ waste_item.house_number }}</p>
+<p class="mb-1"><strong>Phone:</strong> {{ waste_item.phone_number }}</p>
+<p class="mb-1"><strong>Waste Type:</strong> {{ waste_item.waste_type }}</p>
+</div>
 
-                         <p class="mb-1 small">
-                              <strong>Collector:</strong>
-                              {% if waste_item.collector %}
-                              {{ waste_item.collector.firstname }} {{ waste_item.collector.lastname }}
-                              {% else %}
-                              <span class="text-muted">Not Assigned</span>
-                              {% endif %}
-                         </p>
+<span class="badge badge-status
 
-                         <p class="mb-3 small">
-                              <strong>Payment:</strong>
-                              {% if waste_item.collector_payment_status|lower == 'paid' %}
-                              <span class="text-success fw-bold">Paid</span>
-                              {% else %}
-                              <span class="text-muted">{{ waste_item.collector_payment_status|default:"Pending"
-                                   }}</span>
-                              {% endif %}
-                         </p>
+{% if waste_item.status|lower == 'pending' %}
+bg-warning text-dark
+{% elif waste_item.status|lower == 'assigned' %}
+bg-primary
+{% elif waste_item.status|lower == 'picked up' or waste_item.status|lower == 'approved & collected' %}
+bg-success
+{% elif waste_item.status|lower == 'rejected' %}
+bg-danger
+{% else %}
+bg-secondary
+{% endif %}
+">
+{{ waste_item.status }}
+</span>
 
-                         <div class="actions-section">
+<hr>
 
-                              <!-- Assignment Block -->
-                              {% if waste_item.status|lower != 'picked up' and waste_item.status|lower != 'approved &
-                              collected' and waste_item.status|lower != 'rejected' %}
-                              <div class="assignment-box mb-3 p-2 border rounded bg-light">
-                                   <small class="text-muted fw-bold d-block mb-1">
-                                        <i class="fas fa-truck-loading me-1"></i> Assignment
-                                   </small>
+<p class="mb-1 small">
+<strong>Collector:</strong>
+{% if waste_item.collector %}
+{{ waste_item.collector.firstname }} {{ waste_item.collector.lastname }}
+{% else %}
+<span class="text-muted">Not Assigned</span>
+{% endif %}
+</p>
 
-                                   <form action="/assign_collector/" method="POST" class="d-flex gap-2">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="request_id" value="{{ waste_item.id }}">
+<p class="mb-3 small">
+<strong>Payment:</strong>
+{% if waste_item.collector_payment_status|lower == 'paid' %}
+<span class="text-success fw-bold">Paid</span>
+{% else %}
+<span class="text-muted">{{ waste_item.collector_payment_status|default:"Pending" }}</span>
+{% endif %}
+</p>
 
-                                        <select name="collector_id" class="form-select form-select-sm" required>
-                                             <option value="">
-                                                  {% if waste_item.collector %}Change Collector{% else %}Assign
-                                                  Collector{% endif %}
-                                             </option>
+<div class="actions-section">
 
-                                             {% for collector in collectors %}
-                                             <option value="{{ collector.id }}" {% if waste_item.collector and
-                                                  waste_item.collector.id==collector.id %}selected{% endif %}>
-                                                  {{ collector.firstname }} {{ collector.lastname }}
-                                             </option>
-                                             {% endfor %}
-                                        </select>
+<!-- ASSIGN COLLECTOR (Hidden after payment completed) -->
+{% if waste_item.collector_payment_status|lower != 'paid' and waste_item.status|lower != 'picked up' and waste_item.status|lower != 'approved & collected' and waste_item.status|lower != 'rejected' %}
 
-                                        <button type="submit" class="btn btn-primary btn-sm">
-                                             {% if waste_item.collector %}Update{% else %}Assign{% endif %}
-                                        </button>
-                                   </form>
-                              </div>
-                              {% endif %}
+<div class="assignment-box mb-3 p-2 border rounded bg-light">
 
-                              <!-- Approval Block -->
-                              {% if waste_item.status|lower == 'pending' or waste_item.status|lower == 'assigned' or
-                              waste_item.status|lower == 'reached' %}
-                              <div class="payment-setup-box mb-3 p-2 border rounded border-success-subtle bg-light">
-                                   <small class="text-muted fw-bold d-block mb-1">
-                                        <i class="fas fa-tag me-1"></i> User Payment
-                                   </small>
+<small class="text-muted fw-bold d-block mb-1">
+<i class="fas fa-truck-loading me-1"></i> Assignment
+</small>
 
-                                   <form action="/acceptwaste/" method="POST" class="d-flex gap-2">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="id" value="{{ waste_item.id }}">
-                                        <input type="number" name="amount" class="form-control form-control-sm"
-                                             placeholder="Set Amount" min="0" step="0.01"
-                                             value="{{ waste_item.amount|default:'' }}" required>
-                                        <button type="submit" class="btn btn-success btn-sm">
-                                             Approve & Set
-                                        </button>
-                                   </form>
-                              </div>
-                              {% endif %}
+<form action="/assign_collector/" method="POST" class="d-flex gap-2">
+{% csrf_token %}
+<input type="hidden" name="request_id" value="{{ waste_item.id }}">
 
-                              <!-- Reject -->
-                              {% if waste_item.status|lower == 'pending' or waste_item.status|lower == 'assigned' %}
-                              <div class="text-center">
-                                   <a href="/rejectwaste/?id={{ waste_item.id }}"
-                                        class="btn btn-link btn-sm text-danger text-decoration-none">
-                                        <i class="fas fa-times me-1"></i> Reject Request
-                                   </a>
-                              </div>
-                              {% endif %}
+<select name="collector_id" class="form-select form-select-sm" required>
 
-                              <!-- Pay Collector -->
-                              {% if waste_item.status|lower == 'picked up' and waste_item.collector_payment_status|lower
-                              == 'pending' %}
-                              <a href="/pay_collector/?id={{ waste_item.id }}"
-                                   class="btn btn-warning btn-sm w-100 mt-2 fw-bold">
-                                   Pay Collector
-                              </a>
-                              {% endif %}
+<option value="">
+{% if waste_item.collector %}
+Change Collector
+{% else %}
+Assign Collector
+{% endif %}
+</option>
 
-                              {% if waste_item.collector_payment_status|lower == 'paid' %}
-                              <div class="text-center mt-2 p-2 bg-success-subtle rounded border border-success">
-                                   <span class="text-success small fw-bold">
-                                        <i class="fas fa-check-circle me-1"></i> Fully Processed
-                                   </span>
-                              </div>
-                              {% endif %}
+{% for collector in collectors %}
 
-                         </div>
-                    </div>
-               </div>
-          </div>
+<option value="{{ collector.id }}"
+{% if waste_item.collector and waste_item.collector.id == collector.id %}
+selected
+{% endif %}>
 
-          {% empty %}
-          <div class="col-12 text-center text-muted">
-               <p>No requests found</p>
-          </div>
-          {% endfor %}
+{{ collector.firstname }} {{ collector.lastname }}
 
-     </div>
+</option>
+
+{% endfor %}
+
+</select>
+
+<button type="submit" class="btn btn-primary btn-sm">
+
+{% if waste_item.collector %}
+Update
+{% else %}
+Assign
+{% endif %}
+
+</button>
+
+</form>
+
+</div>
+
+{% endif %}
+
+
+<!-- APPROVE USER PAYMENT -->
+{% if waste_item.status|lower == 'pending' or waste_item.status|lower == 'assigned' or waste_item.status|lower == 'reached' %}
+
+<div class="payment-setup-box mb-3 p-2 border rounded border-success-subtle bg-light">
+
+<small class="text-muted fw-bold d-block mb-1">
+<i class="fas fa-tag me-1"></i> User Payment
+</small>
+
+<form action="/acceptwaste/" method="POST" class="d-flex gap-2">
+
+{% csrf_token %}
+<input type="hidden" name="id" value="{{ waste_item.id }}">
+
+<input type="number"
+name="amount"
+class="form-control form-control-sm"
+placeholder="Set Amount"
+min="0"
+step="0.01"
+value="{{ waste_item.amount|default:'' }}"
+required>
+
+<button type="submit" class="btn btn-success btn-sm">
+Approve & Set
+</button>
+
+</form>
+
+</div>
+
+{% endif %}
+
+
+<!-- REJECT -->
+{% if waste_item.status|lower == 'pending' or waste_item.status|lower == 'assigned' %}
+
+<div class="text-center">
+
+<a href="/rejectwaste/?id={{ waste_item.id }}"
+class="btn btn-link btn-sm text-danger text-decoration-none">
+
+<i class="fas fa-times me-1"></i> Reject Request
+
+</a>
+
+</div>
+
+{% endif %}
+
+
+<!-- PAY COLLECTOR -->
+{% if waste_item.status|lower == 'picked up' and waste_item.collector_payment_status|lower == 'pending' %}
+
+<a href="/pay_collector/?id={{ waste_item.id }}"
+class="btn btn-warning btn-sm w-100 mt-2 fw-bold">
+
+Pay Collector
+
+</a>
+
+{% endif %}
+
+
+<!-- COMPLETED -->
+{% if waste_item.collector_payment_status|lower == 'paid' %}
+
+<div class="text-center mt-2 p-2 bg-success-subtle rounded border border-success">
+
+<span class="text-success small fw-bold">
+
+<i class="fas fa-check-circle me-1"></i> Fully Processed
+
+</span>
+
+</div>
+
+{% endif %}
+
+</div>
+
+</div>
+</div>
+</div>
+
+{% empty %}
+
+<div class="col-12 text-center text-muted">
+<p>No requests found</p>
+</div>
+
+{% endfor %}
+
+</div>
 </div>
 
 <br><br><br>
