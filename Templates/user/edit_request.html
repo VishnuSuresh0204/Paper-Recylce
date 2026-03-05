@@ -1,0 +1,119 @@
+{% extends "user/common_user.html" %}
+
+{% block content %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<style>
+    .request-container {
+        max-width: 800px;
+        margin: 50px auto;
+    }
+
+    .card-request {
+        border-radius: 20px;
+        border: none;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-update {
+        background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+        border: none;
+        padding: 12px 30px;
+        font-weight: 600;
+        border-radius: 10px;
+        transition: 0.3s;
+    }
+
+    .btn-update:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(13, 110, 253, 0.3);
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 8px;
+    }
+
+    .form-control:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1);
+    }
+</style>
+
+<div class="container py-5">
+    <div class="request-container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold text-primary"><i class="fas fa-edit me-2"></i>Update Collection Request</h2>
+            <p class="text-muted">Modify the details of your request #{{ waste_request.id }}</p>
+        </div>
+
+        <div class="card card-request">
+            <div class="card-body p-5">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label class="form-label"><i class="fas fa-user me-2"></i>Your Name</label>
+                            <input type="text" name="name" class="form-control form-control-lg"
+                                value="{{ waste_request.name }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label"><i class="fas fa-phone me-2"></i>Phone Number</label>
+                            <input type="text" name="phone_number" class="form-control form-control-lg"
+                                value="{{ waste_request.phone_number }}" maxlength="10" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label"><i class="fas fa-house-user me-2"></i>House Number</label>
+                            <input type="text" name="house_number" class="form-control form-control-lg"
+                                value="{{ waste_request.house_number }}" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label"><i class="fas fa-map-marker-alt me-2"></i>Location /
+                                Landmark</label>
+                            <input type="text" name="location" class="form-control form-control-lg"
+                                value="{{ waste_request.location }}" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label"><i class="fas fa-address-card me-2"></i>Detailed Address</label>
+                            <textarea name="address" class="form-control" rows="3"
+                                required>{{ waste_request.address }}</textarea>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label"><i class="fas fa-trash me-2"></i>Waste Type</label>
+                            <select name="waste_type" required class="form-select form-select-lg">
+                                <option value="Paper" {% if waste_request.waste_type=='Paper' %}selected{% endif %}>
+                                    Paper</option>
+                                <option value="Plastic" {% if waste_request.waste_type=='Plastic' %}selected{% endif %}>
+                                    Plastic</option>
+                                <option value="Metal" {% if waste_request.waste_type=='Metal' %}selected{% endif %}>
+                                    Metal</option>
+                                <option value="Glass" {% if waste_request.waste_type=='Glass' %}selected{% endif %}>
+                                    Glass</option>
+                                <option value="Mix" {% if waste_request.waste_type=='Mix' %}selected{% endif %}>Mix
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label"><i class="fas fa-info-circle me-2"></i>Description / Notes
+                                (Optional)</label>
+                            <textarea name="description" class="form-control"
+                                rows="3">{{ waste_request.description }}</textarea>
+                        </div>
+                        <div class="col-12 text-center mt-5">
+                            <button type="submit" class="btn btn-primary btn-update w-100 fs-5">
+                                <i class="fas fa-save me-2"></i>Save Changes
+                            </button>
+                            <a href="/userrequestdetails/" class="btn btn-link mt-2 text-muted">Cancel and Go Back</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<br><br>
+{% endblock %}
