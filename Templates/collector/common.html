@@ -80,54 +80,48 @@
     <div class="page-wrapper">
         <header class="main-header clearfix">
             <div class="main-header__inner clearfix">
-                <div class="main-header__logo" style=" margin-right: 50px;">
-                    <a href="/"><img src="/static/assets/images/resources/logo-1.png" alt=""></a>
+                <div class="main-header__logo">
+                    <a href="/collecthome/"><img src="/static/assets/images/resources/logo-1.png" alt="Wostin Logo"
+                            style="height: 50px;"></a>
                 </div>
                 <div class="main-menu__menu-box">
-                    <div class="main-menu__menu-top">
-                        <div class="main-menu__menu-top-left">
-                            <p class="main-menu__menu-top-text">Welcome To Waste Disposal & Pickup Services.</p>
-                            <div class="main-menu__menu-top-btn-box">
-                                <a href="request-pickup.html" class="thm-btn main-menu__menu-top-btn">Request a
-                                    Pickup</a>
+                    <div class="main-menu__menu-top pt-2 pb-2"
+                        style="background: #f8f9fa; border-bottom: 1px solid #eee;">
+                        <div class="container-fluid d-flex justify-content-between align-items-center">
+                            <p class="main-menu__menu-top-text mb-0 fw-bold text-primary">
+                                <i class="fas fa-user-circle me-1"></i> Collector Dashboard
+                            </p>
+                            <div class="main-menu__menu-top-right">
+                                <ul class="list-unstyled d-flex mb-0 align-items-center">
+                                    <li class="me-4 d-none d-md-block">
+                                        <small class="text-muted"><i class="fas fa-clock me-1"></i> Session:
+                                            Active</small>
+                                    </li>
+                                    <li>
+                                        <a href="/" class="btn btn-sm btn-outline-danger px-3 rounded-pill fw-bold">
+                                            <i class="fas fa-sign-out-alt me-1"></i> Logout
+                                        </a>
+                                    </li>
+                                </ul>
                             </div>
-                        </div>
-                        <div class="main-menu__menu-top-right">
-                            <ul class="list-unstyled main-menu__menu-top-address">
-                                <li>
-                                    <div class="icon">
-                                        <span class="icon-email"></span>
-                                    </div>
-                                    <div class="text">
-                                        <p><a href="mailto:needhelp@company.com">needhelp@wostin.com</a></p>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="icon">
-                                        <span class="icon-clock"></span>
-                                    </div>
-                                    <div class="text">
-                                        <p>Mon - Sat 8:00 - 6:30, Sunday - Off</p>
-                                    </div>
-                                </li>
-                            </ul>
                         </div>
                     </div>
                     <div class="main-menu__menu-bottom">
                         <nav class="main-menu clearfix">
-                            <div class="main-menu__main-menu-box">
+                            <div class="main-menu__main-menu-box d-flex align-items-center">
                                 <a href="#" class="mobile-nav__toggler"><i class="fa fa-bars"></i></a>
-                                <ul class="main-menu__list" style="margin-left: 300px;">
-                                    <li class="">
-                                        <a href="/collecthome/">Home</a>
-
+                                <ul class="main-menu__list ms-lg-5 ps-lg-5">
+                                    <li class="dropdown">
+                                        <a href="/collecthome/"><i class="fas fa-home me-1"></i> Dashboard</a>
                                     </li>
-
-                                    <li><a href="/coll_requestdetails/">Waste Collection</a></li>
-                                    <!-- <li><a href="{% url 'collector_replies' %}">Replies</a></li> -->
-                                    <li><a href="/paper_collection_requests/">History</a></li>
-
-                                    <li><a href="/">Logout</a></li>
+                                    <li>
+                                        <a href="/coll_requestdetails/"><i class="fas fa-truck-loading me-1"></i> My
+                                            Pickups</a>
+                                    </li>
+                                    <li>
+                                        <a href="/paper_collection_requests/"><i class="fas fa-history me-1"></i> Full
+                                            History</a>
+                                    </li>
                                 </ul>
                             </div>
                         </nav>
