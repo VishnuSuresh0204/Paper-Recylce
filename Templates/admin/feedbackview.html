@@ -1,197 +1,322 @@
 {% extends "admin/common_base.html" %}
 
 {% block content %}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 <style>
-    .feedback-card {
-        border: none;
-        border-radius: 15px;
-        transition: all 0.3s ease;
-        background: #fff;
-    }
+.feedback-card{
+border:none;
+border-radius:15px;
+transition:all .3s ease;
+background:#fff;
+}
 
-    .feedback-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
-    }
+.feedback-card:hover{
+transform:translateY(-5px);
+box-shadow:0 10px 20px rgba(0,0,0,.1)!important;
+}
 
-    .user-avatar {
-        width: 45px;
-        height: 45px;
-        background: #e8f5e9;
-        color: #2e7d32;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        font-size: 1.2rem;
-    }
+.user-avatar{
+width:45px;
+height:45px;
+background:#e8f5e9;
+color:#2e7d32;
+border-radius:12px;
+display:flex;
+align-items:center;
+justify-content:center;
+font-weight:bold;
+font-size:1.2rem;
+}
 
-    .feedback-text {
-        font-size: 0.95rem;
-        line-height: 1.6;
-        color: #444;
-        font-style: italic;
-    }
+.feedback-text{
+font-size:.95rem;
+line-height:1.6;
+color:#444;
+font-style:italic;
+}
 
-    .date-badge {
-        font-size: 0.75rem;
-        color: #888;
-        background: #f8f9fa;
-        padding: 4px 10px;
-        border-radius: 20px;
-    }
+.date-badge{
+font-size:.75rem;
+color:#888;
+background:#f8f9fa;
+padding:4px 10px;
+border-radius:20px;
+}
 
-    .empty-state {
-        padding: 80px 0;
-    }
+.empty-state{
+padding:80px 0;
+}
 
-    .nav-tabs-custom {
-        border-bottom: 2px solid #f0f0f0;
-        margin-bottom: 30px;
-    }
+.nav-tabs-custom{
+border-bottom:2px solid #f0f0f0;
+margin-bottom:30px;
+}
 
-    .nav-tabs-custom .nav-link {
-        border: none;
-        color: #888;
-        font-weight: 500;
-        padding: 12px 25px;
-        position: relative;
-    }
+.nav-tabs-custom .nav-link{
+border:none;
+color:#888;
+font-weight:500;
+padding:12px 25px;
+position:relative;
+}
 
-    .nav-tabs-custom .nav-link.active {
-        color: #28a745;
-        background: transparent;
-    }
+.nav-tabs-custom .nav-link.active{
+color:#28a745;
+background:transparent;
+}
 
-    .nav-tabs-custom .nav-link.active::after {
-        content: '';
-        position: absolute;
-        bottom: -2px;
-        left: 0;
-        width: 100%;
-        height: 2px;
-        background: #28a745;
-    }
+.nav-tabs-custom .nav-link.active::after{
+content:'';
+position:absolute;
+bottom:-2px;
+left:0;
+width:100%;
+height:2px;
+background:#28a745;
+}
 
-    .context-badge {
-        font-size: 0.7rem;
-        background: #e3f2fd;
-        color: #0d47a1;
-        padding: 2px 8px;
-        border-radius: 4px;
-        font-weight: 600;
-    }
+.context-badge{
+font-size:.7rem;
+background:#e3f2fd;
+color:#0d47a1;
+padding:2px 8px;
+border-radius:4px;
+font-weight:600;
+}
 </style>
 
 <div class="container py-5">
-    <div class="row justify-content-center mb-5">
-        <div class="col-md-8 text-center">
-            <h2 class="fw-bold text-dark mb-2">
-                <i class="fas fa-comments text-success me-2"></i>Community Feedback
-            </h2>
-            <p class="text-muted">Monitor and manage all types of user feedback and reviews</p>
-            <div class="mx-auto" style="width: 60px; height: 3px; background: #28a745; border-radius: 2px;"></div>
-        </div>
-    </div>
 
-    <!-- Custom Tabs -->
-    <ul class="nav nav-tabs nav-tabs-custom justify-content-center" id="feedbackTabs" role="tablist">
-        <li class="nav-item">
-            <a class="nav-link active" id="request-tab" data-bs-toggle="tab" href="#request" role="tab">
-                <i class="fas fa-truck-loading me-2"></i>Service Requests
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" id="order-tab" data-bs-toggle="tab" href="#order" role="tab">
-                <i class="fas fa-shopping-bag me-2"></i>Product Orders
-            </a>
-        </li>
-    </ul>
+<div class="row justify-content-center mb-5">
+<div class="col-md-8 text-center">
 
-    <div class="tab-content" id="feedbackTabsContent">
-        <!-- Request Feedback -->
-        <div class="tab-pane fade show active" id="request" role="tabpanel">
-            <div class="row g-4">
-                {% for feedback in request_feedback %}
-                <div class="col-md-6 col-lg-4">
-                    <div class="card feedback-card shadow-sm h-100">
-                        <div class="card-body p-4 d-flex flex-column">
-                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                <div class="d-flex align-items-center">
-                                    <div class="user-avatar me-3" style="background: #e3f2fd; color: #1565c0;">
-                                        {{ feedback.user.firstname|first|upper }}
-                                    </div>
-                                    <div>
-                                        <h6 class="mb-0 fw-bold text-dark">{{ feedback.user.firstname }}</h6>
-                                        <span class="date-badge">{{ feedback.created_date|date:"d M Y" }}</span>
-                                    </div>
-                                </div>
-                                <span class="context-badge">REQ #{{ feedback.request.id }}</span>
-                            </div>
-                            <p class="feedback-text mb-4 px-2">"{{ feedback.feedback_text }}"</p>
-                            <div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top">
-                                <span class="small text-muted">Type: {{ feedback.request.waste_type }}</span>
-                                <a href="{% url 'admin_delete_request_feedback' feedback.id %}"
-                                    class="btn btn-sm btn-outline-danger border-0 rounded-pill px-3"
-                                    onclick="return confirm('Delete this request feedback?')">
-                                    <i class="fas fa-trash-alt me-1"></i>Delete
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% empty %}
-                <div class="col-12 py-5 text-center text-muted">
-                    <i class="fas fa-truck-loading fa-3x opacity-25 mb-3"></i>
-                    <p>No service request feedback found</p>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
+<h2 class="fw-bold text-dark mb-2">
+<i class="fas fa-comments text-success me-2"></i>Community Feedback
+</h2>
 
-        <!-- Order Feedback -->
-        <div class="tab-pane fade" id="order" role="tabpanel">
-            <div class="row g-4">
-                {% for feedback in order_feedback %}
-                <div class="col-md-6 col-lg-4">
-                    <div class="card feedback-card shadow-sm h-100">
-                        <div class="card-body p-4 d-flex flex-column">
-                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                <div class="d-flex align-items-center">
-                                    <div class="user-avatar me-3" style="background: #fff8e1; color: #ff8f00;">
-                                        {{ feedback.user.firstname|first|upper }}
-                                    </div>
-                                    <div>
-                                        <h6 class="mb-0 fw-bold text-dark">{{ feedback.user.firstname }}</h6>
-                                        <span class="date-badge">{{ feedback.created_date|date:"d M Y" }}</span>
-                                    </div>
-                                </div>
-                                <span class="context-badge" style="background: #fff3e0; color: #e65100;">ORD #{{
-                                    feedback.order.id }}</span>
-                            </div>
-                            <p class="feedback-text mb-4 px-2">"{{ feedback.feedback_text }}"</p>
-                            <div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top">
-                                <span class="small text-muted">Product: {{ feedback.order.product.product_name }}</span>
-                                <a href="{% url 'admin_delete_order_feedback' feedback.id %}"
-                                    class="btn btn-sm btn-outline-danger border-0 rounded-pill px-3"
-                                    onclick="return confirm('Delete this order feedback?')">
-                                    <i class="fas fa-trash-alt me-1"></i>Delete
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% empty %}
-                <div class="col-12 py-5 text-center text-muted">
-                    <i class="fas fa-shopping-bag fa-3x opacity-25 mb-3"></i>
-                    <p>No product order feedback found</p>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-    </div>
+<p class="text-muted">
+Monitor and manage all types of user feedback and reviews
+</p>
+
+<div class="mx-auto"
+style="width:60px;height:3px;background:#28a745;border-radius:2px;">
 </div>
+
+</div>
+</div>
+
+
+<!-- Tabs -->
+<ul class="nav nav-tabs nav-tabs-custom justify-content-center"
+id="feedbackTabs"
+role="tablist">
+
+<li class="nav-item">
+<a class="nav-link active"
+id="request-tab"
+data-bs-toggle="tab"
+href="#request"
+role="tab">
+<i class="fas fa-truck-loading me-2"></i>Service Requests
+</a>
+</li>
+
+<li class="nav-item">
+<a class="nav-link"
+id="order-tab"
+data-bs-toggle="tab"
+href="#order"
+role="tab">
+<i class="fas fa-shopping-bag me-2"></i>Product Orders
+</a>
+</li>
+
+</ul>
+
+
+<div class="tab-content" id="feedbackTabsContent">
+
+<!-- REQUEST FEEDBACK -->
+<div class="tab-pane fade show active" id="request">
+
+<div class="row g-4">
+
+{% for feedback in request_feedback %}
+
+<div class="col-md-6 col-lg-4">
+
+<div class="card feedback-card shadow-sm h-100">
+
+<div class="card-body p-4 d-flex flex-column">
+
+<div class="d-flex justify-content-between align-items-start mb-3">
+
+<div class="d-flex align-items-center">
+
+<div class="user-avatar me-3"
+style="background:#e3f2fd;color:#1565c0;">
+
+{{ feedback.user.firstname|first|upper }}
+
+</div>
+
+<div>
+<h6 class="mb-0 fw-bold text-dark">
+{{ feedback.user.firstname }}
+</h6>
+
+<span class="date-badge">
+{{ feedback.created_date|date:"d M Y" }}
+</span>
+
+</div>
+
+</div>
+
+<span class="context-badge">
+REQ #{{ feedback.request.id }}
+</span>
+
+</div>
+
+
+<p class="feedback-text mb-4 px-2">
+"{{ feedback.feedback_text }}"
+</p>
+
+
+<div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top">
+
+<span class="small text-muted">
+Type: {{ feedback.request.waste_type }}
+</span>
+
+<a href="{% url 'admin_delete_request_feedback' feedback.id %}"
+class="btn btn-sm btn-outline-danger border-0 rounded-pill px-3"
+onclick="return confirm('Delete this request feedback?')">
+
+<i class="fas fa-trash-alt me-1"></i>Delete
+
+</a>
+
+</div>
+
+</div>
+</div>
+</div>
+
+{% empty %}
+
+<div class="col-12 py-5 text-center text-muted">
+
+<i class="fas fa-truck-loading fa-3x opacity-25 mb-3"></i>
+
+<p>No service request feedback found</p>
+
+</div>
+
+{% endfor %}
+
+</div>
+</div>
+
+
+<!-- ORDER FEEDBACK -->
+<div class="tab-pane fade" id="order">
+
+<div class="row g-4">
+
+{% for feedback in order_feedback %}
+
+<div class="col-md-6 col-lg-4">
+
+<div class="card feedback-card shadow-sm h-100">
+
+<div class="card-body p-4 d-flex flex-column">
+
+<div class="d-flex justify-content-between align-items-start mb-3">
+
+<div class="d-flex align-items-center">
+
+<div class="user-avatar me-3"
+style="background:#fff8e1;color:#ff8f00;">
+
+{{ feedback.user.firstname|first|upper }}
+
+</div>
+
+<div>
+
+<h6 class="mb-0 fw-bold text-dark">
+{{ feedback.user.firstname }}
+</h6>
+
+<span class="date-badge">
+{{ feedback.created_date|date:"d M Y" }}
+</span>
+
+</div>
+
+</div>
+
+<span class="context-badge"
+style="background:#fff3e0;color:#e65100;">
+
+ORD #{{ feedback.order.id }}
+
+</span>
+
+</div>
+
+
+<p class="feedback-text mb-4 px-2">
+"{{ feedback.feedback_text }}"
+</p>
+
+
+<div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top">
+
+<span class="small text-muted">
+Product: {{ feedback.order.product.product_name }}
+</span>
+
+<a href="{% url 'admin_delete_order_feedback' feedback.id %}"
+class="btn btn-sm btn-outline-danger border-0 rounded-pill px-3"
+onclick="return confirm('Delete this order feedback?')">
+
+<i class="fas fa-trash-alt me-1"></i>Delete
+
+</a>
+
+</div>
+
+</div>
+</div>
+</div>
+
+{% empty %}
+
+<div class="col-12 py-5 text-center text-muted">
+
+<i class="fas fa-shopping-bag fa-3x opacity-25 mb-3"></i>
+
+<p>No product order feedback found</p>
+
+</div>
+
+{% endfor %}
+
+</div>
+</div>
+
+</div>
+</div>
+
+
+<!-- Bootstrap JS (required for tabs) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 {% endblock %}
