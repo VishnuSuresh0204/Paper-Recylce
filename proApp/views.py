@@ -205,6 +205,33 @@ def submitrequest(request):
 
     return render(request, "user/weastrequest.html")
 
+def edit_request(request, request_id):
+    uid = request.session.get('uid')
+    if not uid:
+        return redirect('/login/')
+    
+    waste_request = get_object_or_404(WasteCollectionRequest, id=request_id, user_id=uid)
+    
+    # Only allow editing if request is still Pending
+    if waste_request.status.lower() != 'pending':
+        messages.warning(request, "You can only edit requests that are still pending.")
+        return redirect('/userrequestdetails/')
+
+    if request.method == "POST":
+        waste_request.name = request.POST.get("name")
+        waste_request.address = request.POST.get("address")
+        waste_request.house_number = request.POST.get("house_number")
+        waste_request.location = request.POST.get("location")
+        waste_request.phone_number = request.POST.get("phone_number")
+        waste_request.waste_type = request.POST.get("waste_type")
+        waste_request.description = request.POST.get("description")
+        waste_request.save()
+        
+        messages.success(request, "Request updated successfully.")
+        return redirect('/userrequestdetails/')
+
+    return render(request, "user/edit_request.html", {"waste_request": waste_request})
+
 def ad(request):
     Login.objects.create(email="admin@gmail.com",password="admin@123",userType="Admin")
     return redirect("/")
@@ -272,9 +299,8 @@ def assign_collector(request):
         waste_request.collector = collector
         waste_request.assign_status = "Assigned"
         
-        # Consistent status handling
-        if waste_request.status == 'Pending' or waste_request.status == 'pending':
-            waste_request.status = 'Assigned'
+        # Consistent status handling: Move to Assigned so collector can manage it
+        waste_request.status = 'Assigned'
         
         # Ensure the organizer is assigned if it was unassigned
         if not waste_request.organizer:
@@ -488,10 +514,11 @@ def reject_collector(request, id):
 
 
 def userrequestdetails(request):
-    id = request.GET.get("id")
-    uid = request.session['uid']
-    reqe = WasteCollectionRequest.objects.filter(user_id = uid)
-    return render(request,"user/requestdetails.html",{'req':reqe})
+    uid = request.session.get('uid')
+    if not uid:
+        return redirect('/login/')
+    reqe = WasteCollectionRequest.objects.filter(user_id=uid).order_by('-request_date')
+    return render(request, "user/requestdetails.html", {'req': reqe})
 
 def userpay(request):
     uid = request.session.get('uid')
@@ -710,15 +737,70 @@ def delivered(request):
         messages.info(request,'delivered successfully')
     return redirect('/orderdetailsorg/')
 
-def userfeedback(request):
+
+def add_request_feedback(request, request_id):
     uid = request.session.get('uid')
-    user = UserReg.objects.get(id=uid)   
-    if request.POST:
-        feedback = request.POST.get('feedback')
-        abc = Feedback.objects.create(user=user,feedback=feedback)
-        abc.save()
-        return redirect('/userhome/')
-    return render(request,"user/userfeedback.html")
+    if not uid:
+        return redirect('/login/')
+    
+    waste_request = get_object_or_404(WasteCollectionRequest, id=request_id, user_id=uid)
+    
+    if request.method == 'POST':
+        feedback_text = request.POST.get('feedback_text')
+        if feedback_text:
+            if RequestFeedback.objects.filter(request=waste_request).exists():
+                messages.warning(request, "You have already provided feedback for this request.")
+                return redirect('/userrequestdetails/')
+            
+            user = UserReg.objects.get(id=uid)
+            RequestFeedback.objects.create(
+                request=waste_request,
+                user=user,
+                feedback_text=feedback_text
+            )
+            messages.success(request, "Feedback added successfully.")
+            return redirect('/userrequestdetails/')
+        else:
+            messages.error(request, "Feedback text cannot be empty.")
+            
+    return render(request, 'user/add_feedback.html', {'waste_request': waste_request})
+
+def edit_request_feedback(request, feedback_id):
+    uid = request.session.get('uid')
+    if not uid:
+        return redirect('/login/')
+    
+    feedback = get_object_or_404(RequestFeedback, id=feedback_id, user_id=uid)
+    
+    if request.method == 'POST':
+        feedback_text = request.POST.get('feedback_text')
+        if feedback_text:
+            feedback.feedback_text = feedback_text
+            feedback.save()
+            messages.success(request, "Feedback updated successfully.")
+            return redirect('/userrequestdetails/')
+        else:
+            messages.error(request, "Feedback text cannot be empty.")
+            
+    return render(request, 'user/add_feedback.html', {'feedback': feedback, 'waste_request': feedback.request})
+
+def delete_request_feedback(request, feedback_id):
+    uid = request.session.get('uid')
+    if not uid:
+        return redirect('/login/')
+    
+    feedback = get_object_or_404(RequestFeedback, id=feedback_id, user_id=uid)
+    feedback.delete()
+    messages.success(request, "Feedback deleted successfully.")
+    return redirect('/userrequestdetails/')
+
+def user_view_feedback(request):
+    uid = request.session.get('uid')
+    if not uid:
+        return redirect('/login/')
+    
+    feedbacks = RequestFeedback.objects.filter(user_id=uid).select_related('request').order_by('-created_date')
+    return render(request, 'user/view_feedback.html', {'feedbacks': feedbacks})
 
 def reviewslist(request):
     id = request.GET.get("id")  
@@ -745,9 +827,26 @@ def productreview(request):
 
 def orgreviewlist(request):
     uid = request.session.get('uid')
-    riv = ProductReview.objects.all()
-    pqq = RecycledProduct.objects.all()
-    return render(request,"organization/reviewlist.html",{'riv':riv,'pqq':pqq})
+    if not uid:
+        return redirect('/login/')
+    
+    # Get the organizer profile
+    organizer = get_object_or_404(Organizer, user_id=uid)
+    
+    # Get products belonging to this organizer
+    products = RecycledProduct.objects.filter(org=organizer)
+    
+    # Get classic product reviews for these products
+    classic_reviews = ProductReview.objects.filter(product__in=products).order_by('-review_date')
+    
+    # Get order-specific feedbacks for these products
+    order_feedbacks = OrderFeedback.objects.filter(order__product__in=products).order_by('-created_date')
+    
+    return render(request, "organization/reviewlist.html", {
+        'classic_reviews': classic_reviews,
+        'order_feedbacks': order_feedbacks,
+        'products': products
+    })
 
 
 def adminorderlist(request):
@@ -836,7 +935,19 @@ def deletefed(request):
 
 
 def paper_collection_requests(request):
-    req = WasteCollectionRequest.objects.all()
+    uid = request.session.get('uid')
+    if not uid:
+        return redirect('/login/')
+    
+    login_user = Login.objects.filter(id=uid).first()
+    collector = Collector.objects.filter(user=login_user).first()
+    
+    if not collector:
+        messages.error(request, "Collector profile not found.")
+        return redirect('/login/')
+        
+    # Only show requests assigned to this collector
+    req = WasteCollectionRequest.objects.filter(collector=collector)
     organizers = Organizer.objects.filter(status="approved")  
     return render(request, "collector/paper_collection_requests.html", {"req": req, "organizers": organizers})
 
@@ -905,3 +1016,64 @@ def collector_replies(request):
 
     return render(request, 'collector/collector_replies.html', {'requests': requests})
 
+
+def add_order_feedback(request, order_id):
+    uid = request.session.get('uid')
+    if not uid:
+        return redirect('/login/')
+    
+    order = get_object_or_404(Order, id=order_id, user_id=uid)
+    
+    # Condition: Feedback only for delivered orders
+    if order.status.lower() != 'delivered':
+        messages.warning(request, "You can only provide feedback for delivered orders.")
+        return redirect('/userorderdetails/')
+
+    if request.method == 'POST':
+        feedback_text = request.POST.get('feedback_text')
+        if feedback_text:
+            if OrderFeedback.objects.filter(order=order).exists():
+                messages.warning(request, "You have already provided feedback for this order.")
+                return redirect('/userorderdetails/')
+            
+            user = UserReg.objects.get(id=uid)
+            OrderFeedback.objects.create(
+                order=order,
+                user=user,
+                feedback_text=feedback_text
+            )
+            messages.success(request, "Feedback added successfully.")
+            return redirect('/userorderdetails/')
+        else:
+            messages.error(request, "Feedback text cannot be empty.")
+            
+    return render(request, 'user/add_order_feedback.html', {'order': order})
+
+def edit_order_feedback(request, feedback_id):
+    uid = request.session.get('uid')
+    if not uid:
+        return redirect('/login/')
+    
+    feedback = get_object_or_404(OrderFeedback, id=feedback_id, user_id=uid)
+    
+    if request.method == 'POST':
+        feedback_text = request.POST.get('feedback_text')
+        if feedback_text:
+            feedback.feedback_text = feedback_text
+            feedback.save()
+            messages.success(request, "Feedback updated successfully.")
+            return redirect('/userorderdetails/')
+        else:
+            messages.error(request, "Feedback text cannot be empty.")
+            
+    return render(request, 'user/add_order_feedback.html', {'feedback': feedback, 'order': feedback.order})
+
+def delete_order_feedback(request, feedback_id):
+    uid = request.session.get('uid')
+    if not uid:
+        return redirect('/login/')
+    
+    feedback = get_object_or_404(OrderFeedback, id=feedback_id, user_id=uid)
+    feedback.delete()
+    messages.success(request, "Feedback deleted successfully.")
+    return redirect('/userorderdetails/')
