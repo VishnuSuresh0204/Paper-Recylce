@@ -91,6 +91,8 @@ urlpatterns = [
     path('add_order_feedback/<int:order_id>/', views.add_order_feedback, name='add_order_feedback'),
     path('edit_order_feedback/<int:feedback_id>/', views.edit_order_feedback, name='edit_order_feedback'),
     path('delete_order_feedback/<int:feedback_id>/', views.delete_order_feedback, name='delete_order_feedback'),
+    path('admin_delete_request_feedback/<int:id>/', views.admin_delete_request_feedback, name='admin_delete_request_feedback'),
+    path('admin_delete_order_feedback/<int:id>/', views.admin_delete_order_feedback, name='admin_delete_order_feedback'),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

@@ -854,8 +854,15 @@ def adminorderlist(request):
     return render(request,'admin/orderlist.html',{'fuu':fuu})
 
 def adminfeedbacklist(request):
-    fed = Feedback.objects.all()
-    return render(request,'admin/feedbackview.html',{'fed':fed})
+    general_feedback = Feedback.objects.all().order_by('-created_date')
+    request_feedback = RequestFeedback.objects.all().select_related('request', 'user').order_by('-created_date')
+    order_feedback = OrderFeedback.objects.all().select_related('order', 'user').order_by('-created_date')
+    
+    return render(request, 'admin/feedbackview.html', {
+        'general_feedback': general_feedback,
+        'request_feedback': request_feedback,
+        'order_feedback': order_feedback
+    })
 
 
 def adminproductlist(request):
@@ -928,9 +935,18 @@ def delete(request):
 
 def deletefed(request):
     id = request.GET.get('id')
-    uid = request.session['uid']
     Feedback.objects.filter(id=id).delete()
-    messages.info(request, "Successfully removed")
+    messages.success(request, "General feedback removed successfully.")
+    return redirect('/adminfeedbacklist/')
+
+def admin_delete_request_feedback(request, id):
+    RequestFeedback.objects.filter(id=id).delete()
+    messages.success(request, "Request feedback removed successfully.")
+    return redirect('/adminfeedbacklist/')
+
+def admin_delete_order_feedback(request, id):
+    OrderFeedback.objects.filter(id=id).delete()
+    messages.success(request, "Order feedback removed successfully.")
     return redirect('/adminfeedbacklist/')
 
 

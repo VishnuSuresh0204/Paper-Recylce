@@ -47,69 +47,197 @@
     .empty-state {
         padding: 80px 0;
     }
+
+    .nav-tabs-custom {
+        border-bottom: 2px solid #f0f0f0;
+        margin-bottom: 30px;
+    }
+
+    .nav-tabs-custom .nav-link {
+        border: none;
+        color: #888;
+        font-weight: 500;
+        padding: 12px 25px;
+        position: relative;
+    }
+
+    .nav-tabs-custom .nav-link.active {
+        color: #28a745;
+        background: transparent;
+    }
+
+    .nav-tabs-custom .nav-link.active::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: #28a745;
+    }
+
+    .context-badge {
+        font-size: 0.7rem;
+        background: #e3f2fd;
+        color: #0d47a1;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-weight: 600;
+    }
 </style>
 
 <div class="container py-5">
     <div class="row justify-content-center mb-5">
         <div class="col-md-8 text-center">
             <h2 class="fw-bold text-dark mb-2">
-                <i class="fas fa-comments text-success me-2"></i>User Feedback
+                <i class="fas fa-comments text-success me-2"></i>Community Feedback
             </h2>
-            <p class="text-muted">Review and manage feedback submitted by our community</p>
+            <p class="text-muted">Monitor and manage all types of user feedback and reviews</p>
             <div class="mx-auto" style="width: 60px; height: 3px; background: #28a745; border-radius: 2px;"></div>
         </div>
     </div>
 
-    <div class="row g-4">
-        {% for feedback in fed %}
-        <div class="col-md-6 col-lg-4">
-            <div class="card feedback-card shadow-sm h-100">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="user-avatar me-3">
-                            {{ feedback.user.firstname|first|upper }}
-                        </div>
-                        <div>
-                            <h6 class="mb-0 fw-bold text-dark">{{ feedback.user.firstname }} {{ feedback.user.lastname
-                                }}</h6>
-                            <span class="date-badge">
-                                <i class="far fa-calendar-alt me-1"></i>{{ feedback.created_date|date:"d M Y" }}
-                            </span>
-                        </div>
-                    </div>
+    <!-- Custom Tabs -->
+    <ul class="nav nav-tabs nav-tabs-custom justify-content-center" id="feedbackTabs" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="general-tab" data-bs-toggle="tab" href="#general" role="tab">
+                <i class="fas fa-bullhorn me-2"></i>General
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="request-tab" data-bs-toggle="tab" href="#request" role="tab">
+                <i class="fas fa-truck-loading me-2"></i>Service Requests
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="order-tab" data-bs-toggle="tab" href="#order" role="tab">
+                <i class="fas fa-shopping-bag me-2"></i>Product Orders
+            </a>
+        </li>
+    </ul>
 
-                    <div class="position-relative mb-4">
-                        <i class="fas fa-quote-left text-light position-absolute"
-                            style="top: -10px; left: -5px; font-size: 2rem;"></i>
-                        <p class="feedback-text mb-0 px-2 position-relative">
-                            {{ feedback.feedback }}
-                        </p>
-                    </div>
-
-                    <div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top">
-                        <span class="small text-muted">
-                            <i class="far fa-clock me-1"></i>{{ feedback.created_date|date:"H:i" }}
-                        </span>
-                        <a href="/deletefed/?id={{ feedback.id }}"
-                            class="btn btn-sm btn-outline-danger border-0 rounded-pill px-3"
-                            onclick="return confirm('Are you sure you want to delete this feedback?')">
-                            <i class="fas fa-trash-alt me-1"></i>Delete
-                        </a>
+    <div class="tab-content" id="feedbackTabsContent">
+        <!-- General Feedback -->
+        <div class="tab-pane fade show active" id="general" role="tabpanel">
+            <div class="row g-4">
+                {% for feedback in general_feedback %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card feedback-card shadow-sm h-100">
+                        <div class="card-body p-4 d-flex flex-column">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="user-avatar me-3">
+                                    {{ feedback.user.firstname|first|upper }}
+                                </div>
+                                <div>
+                                    <h6 class="mb-0 fw-bold text-dark">{{ feedback.user.firstname }} {{
+                                        feedback.user.lastname }}</h6>
+                                    <span class="date-badge">
+                                        <i class="far fa-calendar-alt me-1"></i>{{ feedback.created_date|date:"d M Y" }}
+                                    </span>
+                                </div>
+                            </div>
+                            <p class="feedback-text mb-4 px-2">"{{ feedback.feedback }}"</p>
+                            <div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top">
+                                <span class="small text-muted"><i class="far fa-clock me-1"></i>{{
+                                    feedback.created_date|date:"H:i" }}</span>
+                                <a href="/deletefed/?id={{ feedback.id }}"
+                                    class="btn btn-sm btn-outline-danger border-0 rounded-pill px-3"
+                                    onclick="return confirm('Delete this general feedback?')">
+                                    <i class="fas fa-trash-alt me-1"></i>Delete
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        {% empty %}
-        <div class="col-12">
-            <div class="empty-state text-center bg-light rounded-4 border border-dashed">
-                <div class="mb-3">
-                    <i class="fas fa-comment-slash fa-4x text-muted opacity-25"></i>
+                {% empty %}
+                <div class="col-12 py-5 text-center text-muted">
+                    <i class="fas fa-comment-slash fa-3x opacity-25 mb-3"></i>
+                    <p>No general feedback found</p>
                 </div>
-                <h5 class="text-muted fw-normal">No feedback available yet</h5>
-                <p class="small text-muted mb-0">Feedback from users will appear here once submitted.</p>
+                {% endfor %}
             </div>
         </div>
-        {% endfor %}
+
+        <!-- Request Feedback -->
+        <div class="tab-pane fade" id="request" role="tabpanel">
+            <div class="row g-4">
+                {% for feedback in request_feedback %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card feedback-card shadow-sm h-100">
+                        <div class="card-body p-4 d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="user-avatar me-3" style="background: #e3f2fd; color: #1565c0;">
+                                        {{ feedback.user.firstname|first|upper }}
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0 fw-bold text-dark">{{ feedback.user.firstname }}</h6>
+                                        <span class="date-badge">{{ feedback.created_date|date:"d M Y" }}</span>
+                                    </div>
+                                </div>
+                                <span class="context-badge">REQ #{{ feedback.request.id }}</span>
+                            </div>
+                            <p class="feedback-text mb-4 px-2">"{{ feedback.feedback_text }}"</p>
+                            <div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top">
+                                <span class="small text-muted">Type: {{ feedback.request.waste_type }}</span>
+                                <a href="{% url 'admin_delete_request_feedback' feedback.id %}"
+                                    class="btn btn-sm btn-outline-danger border-0 rounded-pill px-3"
+                                    onclick="return confirm('Delete this request feedback?')">
+                                    <i class="fas fa-trash-alt me-1"></i>Delete
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12 py-5 text-center text-muted">
+                    <i class="fas fa-truck-loading fa-3x opacity-25 mb-3"></i>
+                    <p>No service request feedback found</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Order Feedback -->
+        <div class="tab-pane fade" id="order" role="tabpanel">
+            <div class="row g-4">
+                {% for feedback in order_feedback %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card feedback-card shadow-sm h-100">
+                        <div class="card-body p-4 d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="user-avatar me-3" style="background: #fff8e1; color: #ff8f00;">
+                                        {{ feedback.user.firstname|first|upper }}
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0 fw-bold text-dark">{{ feedback.user.firstname }}</h6>
+                                        <span class="date-badge">{{ feedback.created_date|date:"d M Y" }}</span>
+                                    </div>
+                                </div>
+                                <span class="context-badge" style="background: #fff3e0; color: #e65100;">ORD #{{
+                                    feedback.order.id }}</span>
+                            </div>
+                            <p class="feedback-text mb-4 px-2">"{{ feedback.feedback_text }}"</p>
+                            <div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top">
+                                <span class="small text-muted">Product: {{ feedback.order.product.product_name }}</span>
+                                <a href="{% url 'admin_delete_order_feedback' feedback.id %}"
+                                    class="btn btn-sm btn-outline-danger border-0 rounded-pill px-3"
+                                    onclick="return confirm('Delete this order feedback?')">
+                                    <i class="fas fa-trash-alt me-1"></i>Delete
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12 py-5 text-center text-muted">
+                    <i class="fas fa-shopping-bag fa-3x opacity-25 mb-3"></i>
+                    <p>No product order feedback found</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
