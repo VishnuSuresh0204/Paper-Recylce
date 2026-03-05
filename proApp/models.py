@@ -91,4 +91,24 @@ class Feedback(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
 
 
+class RequestFeedback(models.Model):
+    request = models.OneToOneField(WasteCollectionRequest, on_delete=models.CASCADE, related_name='request_feedback')
+    user = models.ForeignKey(UserReg, on_delete=models.CASCADE)
+    feedback_text = models.TextField()
+    created_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Feedback for Request #{self.request.id}"
+
+
+class OrderFeedback(models.Model):
+    order = models.OneToOneField(Order, on_delete=models.CASCADE, related_name='order_feedback')
+    user = models.ForeignKey(UserReg, on_delete=models.CASCADE)
+    feedback_text = models.TextField()
+    created_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Feedback for Order #{self.order.id}"
+
+
 
