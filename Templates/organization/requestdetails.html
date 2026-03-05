@@ -109,9 +109,8 @@
                          <div class="actions-section">
 
                               <!-- Assignment Block -->
-                              {% if not waste_item.collector and waste_item.status|lower != 'picked up' and
-                              waste_item.status|lower != 'approved & collected' and waste_item.status|lower !=
-                              'rejected' %}
+                              {% if waste_item.status|lower != 'picked up' and waste_item.status|lower != 'approved &
+                              collected' and waste_item.status|lower != 'rejected' %}
                               <div class="assignment-box mb-3 p-2 border rounded bg-light">
                                    <small class="text-muted fw-bold d-block mb-1">
                                         <i class="fas fa-truck-loading me-1"></i> Assignment
@@ -122,17 +121,21 @@
                                         <input type="hidden" name="request_id" value="{{ waste_item.id }}">
 
                                         <select name="collector_id" class="form-select form-select-sm" required>
-                                             <option value="" disabled selected>Assign Collector</option>
+                                             <option value="">
+                                                  {% if waste_item.collector %}Change Collector{% else %}Assign
+                                                  Collector{% endif %}
+                                             </option>
 
                                              {% for collector in collectors %}
-                                             <option value="{{ collector.id }}">
+                                             <option value="{{ collector.id }}" {% if waste_item.collector and
+                                                  waste_item.collector.id==collector.id %}selected{% endif %}>
                                                   {{ collector.firstname }} {{ collector.lastname }}
                                              </option>
                                              {% endfor %}
                                         </select>
 
                                         <button type="submit" class="btn btn-primary btn-sm">
-                                             Assign
+                                             {% if waste_item.collector %}Update{% else %}Assign{% endif %}
                                         </button>
                                    </form>
                               </div>

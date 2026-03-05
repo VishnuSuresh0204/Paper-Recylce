@@ -5,30 +5,27 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 <style>
-    .request-card {
-        transition: .3s ease;
-    }
-
-    .request-card:hover {
-        transform: translateY(-4px);
-    }
-
-    .status-pill {
-        font-size: .75rem;
-        padding: 5px 12px;
-        border-radius: 20px;
-    }
-
-    .step-circle {
-        width: 28px;
-        height: 28px;
-        border-radius: 50%;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        font-size: .75rem;
-        font-weight: bold;
-    }
+.request-card{
+    transition:.3s ease;
+}
+.request-card:hover{
+    transform:translateY(-4px);
+}
+.status-pill{
+    font-size:.75rem;
+    padding:5px 12px;
+    border-radius:20px;
+}
+.step-circle{
+    width:28px;
+    height:28px;
+    border-radius:50%;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    font-size:.75rem;
+    font-weight:bold;
+}
 </style>
 
 <div class="container mt-4">
@@ -39,6 +36,7 @@
 </h2>
 <p class="text-muted">Track and update your waste collection status</p>
 </div>
+
 
 {% if messages %}
 <div class="row justify-content-center">
@@ -53,6 +51,7 @@
 </div>
 {% endif %}
 
+
 <div class="row g-4">
 
 {% for waste_item in req %}
@@ -63,12 +62,16 @@
 
 {% if waste_item.status|default:''|lower == 'assigned' %}
 border-start border-4 border-primary
+
 {% elif waste_item.status|default:''|lower == 'reached' %}
 border-start border-4 border-info
+
 {% elif waste_item.status|default:''|lower == 'picked up' %}
 border-start border-4 border-success
+
 {% elif waste_item.status|default:''|lower == 'paid' %}
 border-start border-4 border-warning
+
 {% elif waste_item.status|default:''|lower == 'rejected' %}
 border-start border-4 border-danger
 {% endif %}
@@ -112,16 +115,22 @@ border-start border-4 border-danger
 
 {% if waste_item.status|default:''|lower == 'assigned' %}
 bg-primary
+
 {% elif waste_item.status|default:''|lower == 'dated' %}
 bg-info
+
 {% elif waste_item.status|default:''|lower == 'reached' %}
 bg-info
+
 {% elif waste_item.status|default:''|lower == 'picked up' %}
 bg-success
+
 {% elif waste_item.status|default:''|lower == 'paid' %}
 bg-warning text-dark
+
 {% elif waste_item.status|default:''|lower == 'rejected' %}
 bg-danger
+
 {% else %}
 bg-secondary
 {% endif %}
@@ -140,10 +149,66 @@ bg-secondary
 
 <hr>
 
+<!-- PROGRESS -->
+<div class="d-flex align-items-center justify-content-between text-center small mb-4">
+
+<div class="flex-column d-flex align-items-center">
+<div class="step-circle
+{% if waste_item.status|lower == 'assigned' or waste_item.status|lower == 'dated' or waste_item.status|lower == 'reached' or waste_item.status|lower == 'picked up' or waste_item.status|lower == 'paid' %}
+bg-primary text-white
+{% else %}
+bg-light text-muted
+{% endif %}
+">1</div>
+<div class="mt-1" style="font-size:.65rem;">Assigned</div>
+</div>
+
+<div style="flex:1;border-top:2px dashed #ccc;margin-bottom:15px;"></div>
+
+<div class="flex-column d-flex align-items-center">
+<div class="step-circle
+{% if waste_item.status|lower == 'dated' or waste_item.status|lower == 'reached' or waste_item.status|lower == 'picked up' or waste_item.status|lower == 'paid' %}
+bg-info text-white
+{% else %}
+bg-light text-muted
+{% endif %}
+">2</div>
+<div class="mt-1" style="font-size:.65rem;">Scheduled</div>
+</div>
+
+<div style="flex:1;border-top:2px dashed #ccc;margin-bottom:15px;"></div>
+
+<div class="flex-column d-flex align-items-center">
+<div class="step-circle
+{% if waste_item.status|lower == 'reached' or waste_item.status|lower == 'picked up' or waste_item.status|lower == 'paid' %}
+bg-info text-white
+{% else %}
+bg-light text-muted
+{% endif %}
+">3</div>
+<div class="mt-1" style="font-size:.65rem;">Reached</div>
+</div>
+
+<div style="flex:1;border-top:2px dashed #ccc;margin-bottom:15px;"></div>
+
+<div class="flex-column d-flex align-items-center">
+<div class="step-circle
+{% if waste_item.status|lower == 'picked up' or waste_item.status|lower == 'paid' %}
+bg-success text-white
+{% else %}
+bg-light text-muted
+{% endif %}
+">4</div>
+<div class="mt-1" style="font-size:.65rem;">Picked</div>
+</div>
+
+</div>
+
+
 <!-- ACTIONS -->
 <div class="mt-auto d-grid gap-2">
 
-{% if waste_item.status|default:''|lower == 'assigned' or waste_item.status|default:''|lower == 'approved' or waste_item.status|default:''|lower == 'pending' %}
+{% if waste_item.status|lower == 'assigned' or waste_item.status|lower == 'approved' or waste_item.status|lower == 'pending' %}
 
 <form method="POST" action="{% url 'update_pickup_date' waste_item.id %}" class="bg-light p-2 rounded border">
 {% csrf_token %}
@@ -161,25 +226,25 @@ bg-secondary
 Directly Mark Reached
 </a>
 
-{% elif waste_item.status|default:''|lower == 'dated' %}
+{% elif waste_item.status|lower == 'dated' %}
 
 <a href="/mark_reached/?id={{ waste_item.id }}" class="btn btn-info text-white btn-sm py-2">
 <i class="fas fa-location-arrow me-1"></i> Mark as Reached
 </a>
 
-{% elif waste_item.status|default:''|lower == 'reached' %}
+{% elif waste_item.status|lower == 'reached' %}
 
 <a href="/wepicked/?id={{ waste_item.id }}" class="btn btn-success btn-sm py-2">
 <i class="fas fa-box me-1"></i> Mark as Picked Up
 </a>
 
-{% elif waste_item.status|default:''|lower == 'picked up' %}
+{% elif waste_item.status|lower == 'picked up' %}
 
 <div class="alert alert-success text-center small p-2 mb-0">
 <i class="fas fa-hourglass-half me-1"></i> Awaiting payment from organiser
 </div>
 
-{% elif waste_item.status|default:''|lower == 'paid' %}
+{% elif waste_item.status|lower == 'paid' %}
 
 <div class="alert alert-warning text-center small p-2 mb-0 border-warning">
 <i class="fas fa-money-bill-wave me-1"></i> Payment Received — Complete!
