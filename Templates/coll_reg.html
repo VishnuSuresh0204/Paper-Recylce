@@ -67,10 +67,6 @@
                                     name="email"
                                     placeholder="Email Address"
                                     required
-                                    pattern="^[a-zA-Z0-9._%+-]+@gmail\.com$"
-                                    title="Only Gmail allowed (example@gmail.com)"
-                                    oninvalid="this.setCustomValidity('Enter a valid Gmail address')"
-                                    oninput="this.setCustomValidity('')"
                                 >
                             </div>
                         </div>
@@ -150,6 +146,12 @@
 <!-- JS Validation -->
 <script>
 function validateForm() {
+    let email = document.querySelector('input[name="email"]').value;
+
+    if (!email.endsWith("@gmail.com")) {
+        alert("invalid credentials");
+        return false;
+    }
 
     // Password match check
     let password = document.getElementById("password").value;

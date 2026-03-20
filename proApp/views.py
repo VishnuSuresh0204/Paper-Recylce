@@ -768,8 +768,9 @@ def payment(request):
     if request.method == 'POST':
         order.payment_status = 'paid'
         order.save()
-        messages.success(request, 'Payment successfully')
-        return redirect('/productreview/')
+        messages.success(request, 'Payment successful')
+        # Redirect to user order history instead of productreview
+        return redirect('/userorderdetails/')
     return render(request, "user/payment.html", {'order': order})
 
 
@@ -789,9 +790,15 @@ def shipped(request):
         if order.status != "Pending":
             messages.warning(request, f"Order {id} is already {order.status}.")
             return redirect('/orderdetailsorg/')
+            
+        # Security check: Ensure order is paid before shipping
+        if order.payment_status.lower() != 'paid':
+            messages.error(request, "Cannot ship unpaid orders. Awaiting user payment.")
+            return redirect('/orderdetailsorg/')
+            
         order.status = "Shipped"
         order.save() 
-        messages.info(request,'Shipped successfully')
+        messages.info(request, 'Shipped successfully')
     return redirect('/orderdetailsorg/')
 
 def delivered(request):
@@ -885,6 +892,14 @@ def user_view_feedback(request):
     feedbacks = RequestFeedback.objects.filter(user_id=uid).select_related('request').order_by('-created_date')
     return render(request, 'user/view_feedback.html', {'feedbacks': feedbacks})
 
+def user_view_order_feedback(request):
+    uid = request.session.get('uid')
+    if not uid:
+        return redirect('/login/')
+    
+    feedbacks = OrderFeedback.objects.filter(user_id=uid).select_related('order__product').order_by('-created_date')
+    return render(request, 'user/view_order_feedback.html', {'feedbacks': feedbacks})
+
 def reviewslist(request):
     id = request.GET.get("id")  
     uid = request.session.get('uid') 
@@ -925,9 +940,13 @@ def orgreviewlist(request):
     # Get order-specific feedbacks for these products
     order_feedbacks = OrderFeedback.objects.filter(order__product__in=products).order_by('-created_date')
     
+    # Get collection feedbacks for this organizer
+    collection_feedbacks = RequestFeedback.objects.filter(request__organizer=organizer).order_by('-created_date')
+    
     return render(request, "organization/reviewlist.html", {
         'classic_reviews': classic_reviews,
         'order_feedbacks': order_feedbacks,
+        'collection_feedbacks': collection_feedbacks,
         'products': products
     })
 

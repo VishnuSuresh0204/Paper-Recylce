@@ -7,205 +7,216 @@
 
 <style>
 .feedback-card{
-transition:0.3s ease;
-border-radius:15px;
+  transition:0.3s ease;
+  border-radius:15px;
 }
-
 .feedback-card:hover{
-transform:translateY(-5px);
-box-shadow:0 10px 20px rgba(0,0,0,0.1)!important;
+  transform:translateY(-5px);
+  box-shadow:0 10px 20px rgba(0,0,0,0.1)!important;
 }
-
 .badge-type{
-font-size:0.75rem;
-padding:5px 10px;
-border-radius:6px;
+  font-size:0.75rem;
+  padding:5px 10px;
+  border-radius:6px;
 }
-
 .section-title{
-border-left:4px solid #198754;
-padding-left:15px;
+  border-left:4px solid #198754;
+  padding-left:15px;
 }
 </style>
 
 <div class="container py-5">
 
-<div class="text-center mb-5">
-<h2 class="fw-bold text-success">
-<i class="fas fa-star me-2"></i>Customer Feedbacks & Reviews
-</h2>
-<p class="text-muted">Manage reviews and feedback for your recycled products</p>
+  <!-- HEADER -->
+  <div class="text-center mb-5">
+    <h2 class="fw-bold text-success">
+      <i class="fas fa-star me-2"></i>Customer Feedbacks & Reviews
+    </h2>
+    <p class="text-muted">Manage reviews and feedback for your recycled products</p>
+  </div>
+
+  <!-- ================= ORDER FEEDBACK ================= -->
+  <div class="mb-5">
+    <h4 class="fw-bold mb-4 section-title">Product Purchase Feedback</h4>
+
+    <div class="row g-4">
+      {% for feedback in order_feedbacks %}
+
+      <div class="col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm border-0 feedback-card">
+          <div class="card-body p-4 d-flex flex-column">
+
+            <div class="d-flex justify-content-between align-items-start mb-3">
+              <h5 class="fw-bold text-truncate">
+                {{ feedback.order.product.product_name|default:"Product" }}
+              </h5>
+              <span class="badge bg-primary-subtle text-primary badge-type">
+                Order #{{ feedback.order.id|default:"-" }}
+              </span>
+            </div>
+
+            <p class="mb-3 text-dark small fst-italic">
+              "{{ feedback.feedback_text|default:"No feedback text" }}"
+            </p>
+
+            <div class="mt-auto pt-3 border-top">
+              <div class="d-flex align-items-center">
+                <div class="bg-success-subtle text-success p-2 rounded-circle me-3">
+                  <i class="fas fa-user small"></i>
+                </div>
+                <div class="small">
+                  <span class="fw-bold d-block">
+                    {{ feedback.user.firstname|default:"Customer" }}
+                  </span>
+                  <span class="text-muted">
+                    {{ feedback.created_date|date:"M d, Y" }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      {% empty %}
+      <div class="col-12 text-center py-4 bg-light rounded-3 border">
+        <p class="text-muted mb-0">No order feedbacks received yet.</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- ================= COLLECTION FEEDBACK ================= -->
+  <div class="mb-5">
+    <h4 class="fw-bold mb-4 section-title" style="border-left-color:#0dcaf0;">
+      Waste Collection Feedback
+    </h4>
+
+    <div class="row g-4">
+      {% for feedback in collection_feedbacks %}
+
+      <div class="col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm border-0 feedback-card">
+          <div class="card-body p-4 d-flex flex-column">
+
+            <div class="d-flex justify-content-between align-items-start mb-3">
+              <h5 class="fw-bold text-secondary">
+                Collection Request
+              </h5>
+              <span class="badge bg-info-subtle text-info badge-type">
+                Request #{{ feedback.request.id|default:"-" }}
+              </span>
+            </div>
+
+            <p class="mb-3 text-dark small fst-italic flex-grow-1">
+              "{{ feedback.feedback_text|default:"No feedback text" }}"
+            </p>
+
+            <div class="mt-auto pt-3 border-top">
+              <div class="d-flex align-items-center">
+                <div class="bg-info-subtle text-info p-2 rounded-circle me-3">
+                  <i class="fas fa-recycle small"></i>
+                </div>
+                <div class="small">
+                  <span class="fw-bold d-block">
+                    {{ feedback.user.firstname|default:"Customer" }}
+                  </span>
+                  <span class="text-muted">
+                    {{ feedback.created_date|date:"M d, Y" }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      {% empty %}
+      <div class="col-12 text-center py-4 bg-light rounded-3 border">
+        <p class="text-muted mb-0">No collection feedbacks received yet.</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- ================= PRODUCT REVIEWS ================= -->
+  <div>
+    <h4 class="fw-bold mb-4 section-title">General Product Reviews</h4>
+
+    <div class="row g-4">
+      {% for review in classic_reviews %}
+
+      <div class="col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm border-0 feedback-card">
+
+          <div class="card-body p-4 d-flex flex-column">
+
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <h5 class="fw-bold text-truncate">
+                {{ review.product.product_name|default:"Product" }}
+              </h5>
+
+              <!-- Stars -->
+              <span class="text-warning">
+                {% for i in "12345"|make_list %}
+                  {% if forloop.counter <= review.rating|default:0 %}
+                    ★
+                  {% else %}
+                    ☆
+                  {% endif %}
+                {% endfor %}
+              </span>
+            </div>
+
+            <p class="mb-3 text-muted small">
+              {{ review.review_text|default:"No review text available." }}
+            </p>
+
+            <div class="mt-auto pt-3 border-top">
+              <div class="d-flex justify-content-between align-items-center">
+
+                <div class="d-flex align-items-center">
+                  <div class="bg-primary-subtle text-primary p-2 rounded-circle me-3">
+                    <i class="fas fa-user small"></i>
+                  </div>
+
+                  <div class="small">
+                    <span class="fw-bold d-block">
+                      {{ review.user.firstname|default:"Customer" }}
+                    </span>
+                    <span class="text-muted">
+                      {{ review.review_date|date:"M d, Y" }}
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Delete -->
+                <a href="/delete_review/?id={{ review.id }}"
+                   class="btn btn-sm btn-outline-danger"
+                   onclick="return confirm('Delete this review?')">
+                  <i class="fas fa-trash"></i>
+                </a>
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      {% empty %}
+      <div class="col-12 text-center py-4 bg-light rounded-3 border">
+        <p class="text-muted mb-0">No product reviews available.</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
 </div>
 
-<!-- ORDER FEEDBACK -->
-
-<div class="mb-5">
-
-<h4 class="fw-bold mb-4 section-title">Product Purchase Feedback</h4>
-
-<div class="row g-4">
-
-{% for feedback in order_feedbacks %}
-
-<div class="col-md-6 col-lg-4">
-
-<div class="card h-100 shadow-sm border-0 feedback-card">
-
-<div class="card-body p-4">
-
-<div class="d-flex justify-content-between align-items-start mb-3">
-
-<h5 class="fw-bold mb-0 text-truncate">
-{{ feedback.order.product.product_name|default:"Product" }}
-</h5>
-
-<span class="badge bg-primary-subtle text-primary badge-type">
-Order #{{ feedback.order.id|default:"-" }}
-</span>
-
-</div>
-
-<p class="mb-3 text-dark small fst-italic">
-"{{ feedback.feedback_text|default:"No feedback text" }}"
-</p>
-
-<div class="mt-auto pt-3 border-top">
-
-<div class="d-flex align-items-center">
-
-<div class="bg-success-subtle text-success p-2 rounded-circle me-3">
-<i class="fas fa-user small"></i>
-</div>
-
-<div class="small">
-<span class="d-block fw-bold">
-{{ feedback.user.firstname|default:"Customer" }}
-</span>
-
-<span class="text-muted">
-{{ feedback.created_date|date:"M d, Y" }}
-</span>
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-{% empty %}
-
-<div class="col-12 text-center py-4 bg-light rounded-3 border">
-<p class="text-muted mb-0">No order feedbacks received yet.</p>
-</div>
-
-{% endfor %}
-
-</div>
-
-</div>
-
-<!-- PRODUCT REVIEWS -->
-
-<div>
-
-<h4 class="fw-bold mb-4 section-title">General Product Reviews</h4>
-
-<div class="row g-4">
-
-{% for review in classic_reviews %}
-
-<div class="col-md-6 col-lg-4">
-
-<div class="card h-100 shadow-sm border-0 feedback-card">
-
-<div class="card-body p-4 d-flex flex-column">
-
-<div class="d-flex justify-content-between align-items-start mb-2">
-
-<h5 class="fw-bold mb-0 text-truncate">
-{{ review.product.product_name|default:"Product" }}
-</h5>
-
-<span class="text-warning">
-
-{% for i in "12345"|make_list %}
-
-{% if forloop.counter <= review.rating|default:0 %}
-★
-{% else %}
-☆
-{% endif %}
-
-{% endfor %}
-
-</span>
-
-</div>
-
-<p class="mb-3 text-muted small">
-{{ review.review_text|default:"No review text available." }}
-</p>
-
-<div class="mt-auto pt-3 border-top">
-
-<div class="d-flex justify-content-between align-items-center">
-
-<div class="d-flex align-items-center">
-
-<div class="bg-primary-subtle text-primary p-2 rounded-circle me-3">
-<i class="fas fa-user small"></i>
-</div>
-
-<div class="small">
-
-<span class="d-block fw-bold">
-{{ review.user.firstname|default:"Customer" }}
-</span>
-
-<span class="text-muted">
-{{ review.review_date|date:"M d, Y" }}
-</span>
-
-</div>
-
-</div>
-
-<a href="/delete_review/?id={{ review.id }}" 
-class="btn btn-sm btn-outline-danger"
-onclick="return confirm('Delete this review?')">
-
-<i class="fas fa-trash"></i>
-
-</a>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-{% empty %}
-
-<div class="col-12 text-center py-4 bg-light rounded-3 border">
-<p class="text-muted mb-0">No product reviews available.</p>
-</div>
-
-{% endfor %}
-
-</div>
-
-</div>
-
-</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <br><br>
 

@@ -87,6 +87,7 @@ urlpatterns = [
     path('edit_request_feedback/<int:feedback_id>/', views.edit_request_feedback, name='edit_request_feedback'),
     path('delete_request_feedback/<int:feedback_id>/', views.delete_request_feedback, name='delete_request_feedback'),
     path('view_feedback/', views.user_view_feedback, name='user_view_feedback'),
+    path('view_order_feedback/', views.user_view_order_feedback, name='user_view_order_feedback'),
     path('edit_request/<int:request_id>/', views.edit_request, name='edit_request'),
     path('add_order_feedback/<int:order_id>/', views.add_order_feedback, name='add_order_feedback'),
     path('edit_order_feedback/<int:feedback_id>/', views.edit_order_feedback, name='edit_order_feedback'),

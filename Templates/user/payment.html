@@ -73,8 +73,8 @@
   <div class="container">
     <h2>💳 Payment</h2>
 
-    <form id="paymentForm">
-
+    <form id="paymentForm" method="POST">
+      {% csrf_token %}
       <!-- CARD NUMBER -->
       <label>Card Number</label>
       <div class="row card-number-field">
@@ -123,24 +123,8 @@
       });
     });
 
-    // LUHN CHECK
-    function validateCardNumber(number) {
-      let sum = 0, double = false;
-
-      for (let i = number.length - 1; i >= 0; i--) {
-        let digit = parseInt(number[i]);
-
-        if (double) {
-          digit *= 2;
-          if (digit > 9) digit -= 9;
-        }
-
-        sum += digit;
-        double = !double;
-      }
-
-      return sum % 10 === 0;
-    }
+    // LUHN CHECK (Disabled for easier user testing)
+    // function validateCardNumber(number) { ... }
 
     // VALIDATION
     document.getElementById("paymentForm").addEventListener("submit", function (e) {
@@ -161,8 +145,8 @@
         cardNumber += input.value;
       });
 
-      if (cardNumber.length !== 16 || !validateCardNumber(cardNumber)) {
-        alert("Invalid card number");
+      if (cardNumber.length !== 16) {
+        alert("Invalid card number. Must be 16 digits.");
         valid = false;
       }
 
