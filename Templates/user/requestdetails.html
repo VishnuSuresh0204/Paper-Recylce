@@ -68,8 +68,12 @@
                             {{ waste_item.name|default:"Waste Request" }}
                         </h4>
 
-                        <span class="badge badge-status bg-secondary">
-                            {{ waste_item.status|default:"Pending"|title }}
+                        <span class="badge badge-status {% if waste_item.payment_status|lower == 'paid' %}bg-success text-white{% else %}bg-secondary{% endif %}">
+                            {% if waste_item.payment_status|lower == 'paid' %}
+                                <i class="fas fa-check-circle me-1"></i> Paid
+                            {% else %}
+                                {{ waste_item.status|default:"Pending"|title }}
+                            {% endif %}
                         </span>
 
                     </div>
@@ -116,9 +120,15 @@
                             <i class="fas fa-check-circle me-1"></i>Paid
                         </span>
                         {% else %}
-                        <span class="badge bg-warning text-dark">
-                            <i class="fas fa-clock me-1"></i>Unpaid
-                        </span>
+                        <div class="mt-2">
+                            <span class="badge bg-warning text-dark mb-2">
+                                <i class="fas fa-clock me-1"></i>Unpaid
+                            </span>
+                            <br>
+                            <a href="{% url 'userpay' %}?id={{ waste_item.id }}" class="btn btn-sm btn-primary mt-1">
+                                <i class="fas fa-credit-card me-1"></i> Pay Now
+                            </a>
+                        </div>
                         {% endif %}
 
                         {% else %}
@@ -134,25 +144,29 @@
                         </h6>
 
                         {% if waste_item.request_feedback %}
-                        <div class="bg-light p-3 rounded border">
-                            <p class="mb-2 small">{{ waste_item.request_feedback.feedback_text }}</p>
-                            <div class="d-flex gap-2">
-                                <a href="{% url 'edit_request_feedback' waste_item.request_feedback.id %}"
-                                    class="btn btn-sm btn-outline-primary">
-                                    <i class="fas fa-edit"></i> Edit
-                                </a>
-                                <a href="{% url 'delete_request_feedback' waste_item.request_feedback.id %}"
-                                    class="btn btn-sm btn-outline-danger"
-                                    onclick="return confirm('Delete this feedback?')">
-                                    <i class="fas fa-trash"></i> Delete
-                                </a>
+                            <div class="bg-light p-3 rounded border">
+                                <p class="mb-2 small">{{ waste_item.request_feedback.feedback_text }}</p>
+                                <div class="d-flex gap-2">
+                                    <a href="{% url 'edit_request_feedback' waste_item.request_feedback.id %}"
+                                        class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
+                                    <a href="{% url 'delete_request_feedback' waste_item.request_feedback.id %}"
+                                        class="btn btn-sm btn-outline-danger"
+                                        onclick="return confirm('Delete this feedback?')">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </a>
+                                </div>
                             </div>
-                        </div>
+                        {% elif waste_item.status|lower == 'picked up' %}
+                            <a href="{% url 'add_request_feedback' waste_item.id %}"
+                                class="btn btn-sm btn-outline-success w-100">
+                                <i class="fas fa-plus me-1"></i> Add Feedback
+                            </a>
                         {% else %}
-                        <a href="{% url 'add_request_feedback' waste_item.id %}"
-                            class="btn btn-sm btn-outline-success w-100">
-                            <i class="fas fa-plus me-1"></i> Add Feedback
-                        </a>
+                            <p class="text-muted small italic">
+                                <i class="fas fa-info-circle me-1"></i> Feedback can be added after the request is picked up.
+                            </p>
                         {% endif %}
                     </div>
 

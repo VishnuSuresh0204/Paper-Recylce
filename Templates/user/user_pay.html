@@ -1,3 +1,4 @@
+```html
 {% extends "user/common_user.html" %}
 
 {% block content %}
@@ -6,116 +7,68 @@
         <div class="col-lg-10 col-xl-8">
             <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
                 <div class="row g-0">
-                    <!-- Left Side: Summary -->
+
+                    <!-- LEFT SIDE -->
                     <div class="col-md-5 bg-light p-4 p-lg-5">
                         <h4 class="fw-bold mb-4">Order Summary</h4>
 
                         <div class="mb-4">
-                            <label class="text-muted small text-uppercase fw-bold mb-1">Request Details</label>
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span>#{{ waste_request.id }} - {{ waste_request.waste_type }}</span>
-                                <span class="badge bg-success-subtle text-success border border-success-subtle">{{ waste_request.status }}</span>
+                            <label class="text-muted small fw-bold mb-1">Request Details</label>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>#{{ waste_request.id }}</span>
+                                <span class="badge bg-success">{{ waste_request.status }}</span>
                             </div>
-                            <p class="text-muted small mb-0">{{ waste_request.name }}</p>
+                            <p class="text-muted small">{{ waste_request.name }}</p>
                         </div>
 
-                        <div class="pt-4 border-top mt-auto">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <span class="text-muted">Subtotal</span>
-                                <span class="fw-bold">₹{{ waste_request.amount }}</span>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <span class="text-muted">Tax (0%)</span>
-                                <span class="fw-bold">₹0.00</span>
-                            </div>
-                            <hr>
-                            <div class="d-flex justify-content-between align-items-center pt-2">
-                                <h5 class="fw-bold mb-0">Total Due</h5>
-                                <h3 class="fw-bold text-success mb-0">₹{{ waste_request.amount }}</h3>
-                            </div>
-                        </div>
+                        <hr>
 
-                        <div class="mt-5 d-none d-md-block">
-                            <div class="p-3 bg-white rounded-3 border">
-                                <div class="d-flex align-items-center gap-3">
-                                    <i class="fas fa-shield-alt text-success fs-3"></i>
-                                    <div>
-                                        <p class="mb-0 fw-bold small">Secure Payment</p>
-                                        <p class="text-muted small mb-0">Your data is encrypted and secure.</p>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="d-flex justify-content-between">
+                            <strong>Total</strong>
+                            <h4 class="text-success">₹{{ waste_request.amount }}</h4>
                         </div>
                     </div>
 
-                    <!-- Right Side: Details -->
+                    <!-- RIGHT SIDE -->
                     <div class="col-md-7 p-4 p-lg-5 bg-white">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h4 class="fw-bold mb-0">Payment Details</h4>
-                            <div class="text-muted">
-                                <i class="fab fa-cc-visa fa-2x mx-1"></i>
-                                <i class="fab fa-cc-mastercard fa-2x mx-1"></i>
-                            </div>
-                        </div>
 
-                        {% for message in messages %}
-                        <div class="alert alert-info alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
-                            {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                        {% endfor %}
+                        <h4 class="fw-bold mb-4">Payment Details</h4>
 
-                        <form action="/userpay/" method="POST" class="payment-form">
+                        <form id="paymentForm" method="POST" action="/userpay/">
                             {% csrf_token %}
                             <input type="hidden" name="id" value="{{ waste_request.id }}">
 
-                            <div class="mb-4">
-                                <label class="form-label fw-bold">Name on Card</label>
-                                <input type="text" class="form-control form-control-lg bg-light border-0"
-                                    placeholder="Cardholder Name" required>
+                            <!-- NAME -->
+                            <div class="mb-3">
+                                <label class="fw-bold">Name on Card</label>
+                                <input id="name" type="text" class="form-control" required>
                             </div>
 
-                            <div class="mb-4">
-                                <label class="form-label fw-bold">Card Number</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-light border-0"><i
-                                            class="fas fa-credit-card text-muted"></i></span>
-                                    <input type="text" class="form-control form-control-lg bg-light border-0"
-                                        placeholder="0000 0000 0000 0000" maxlength="19" required>
-                                </div>
+                            <!-- CARD -->
+                            <div class="mb-3">
+                                <label class="fw-bold">Card Number</label>
+                                <input id="card" type="text" maxlength="19"
+                                    class="form-control" placeholder="0000 0000 0000 0000" required>
                             </div>
 
-                            <div class="row mb-4">
+                            <!-- EXPIRY + CVV -->
+                            <div class="row">
                                 <div class="col-7">
-                                    <label class="form-label fw-bold">Expiration Date</label>
-                                    <input type="text" class="form-control form-control-lg bg-light border-0"
-                                        placeholder="MM / YY" maxlength="7" required>
+                                    <label class="fw-bold">Expiry</label>
+                                    <input id="expiry" type="text" maxlength="5"
+                                        class="form-control" placeholder="MM/YY" required>
                                 </div>
+
                                 <div class="col-5">
-                                    <label class="form-label fw-bold">CVV</label>
-                                    <input type="password" class="form-control form-control-lg bg-light border-0"
-                                        placeholder="123" maxlength="3" required>
+                                    <label class="fw-bold">CVV</label>
+                                    <input id="cvv" type="password" maxlength="4"
+                                        class="form-control" required>
                                 </div>
                             </div>
 
-                            <div class="d-grid gap-3 mt-5">
-                                <button type="submit" class="btn btn-success btn-lg py-3 fw-bold shadow-sm">
-                                    Complete Payment
-                                </button>
-                                <a href="/userrequestdetails/" class="btn btn-link text-muted text-decoration-none">
-                                    <i class="fas fa-arrow-left me-2"></i> Return to Requests
-                                </a>
-                            </div>
-
-                            <div class="text-center mt-4">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" height="20"
-                                    class="grayscale opacity-50 mx-2" alt="PayPal">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg"
-                                    height="15" class="grayscale opacity-50 mx-2" alt="Visa">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg"
-                                    height="20" class="grayscale opacity-50 mx-2" alt="Mastercard">
-                            </div>
+                            <button class="btn btn-success w-100 mt-4">Pay Now</button>
                         </form>
+
                     </div>
                 </div>
             </div>
@@ -123,15 +76,110 @@
     </div>
 </div>
 
-<style>
-    .grayscale {
-        filter: grayscale(100%);
+<script>
+
+// ALLOW ONLY NUMBERS (CARD + CVV)
+document.getElementById("card").addEventListener("input", function() {
+    this.value = this.value.replace(/\D/g, "").replace(/(.{4})/g, "$1 ").trim();
+});
+
+document.getElementById("cvv").addEventListener("input", function() {
+    this.value = this.value.replace(/\D/g, "");
+});
+
+// EXPIRY FORMAT MM/YY
+document.getElementById("expiry").addEventListener("input", function() {
+    let val = this.value.replace(/\D/g, "");
+    if (val.length >= 3) {
+        this.value = val.slice(0,2) + "/" + val.slice(2,4);
+    } else {
+        this.value = val;
+    }
+});
+
+// LUHN CHECK
+function validateCard(card) {
+    let num = card.replace(/\s/g, "");
+    let sum = 0, double = false;
+
+    for (let i = num.length - 1; i >= 0; i--) {
+        let digit = parseInt(num[i]);
+
+        if (double) {
+            digit *= 2;
+            if (digit > 9) digit -= 9;
+        }
+
+        sum += digit;
+        double = !double;
     }
 
-    .form-control:focus {
-        background-color: #fff !important;
-        box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.1) !important;
-        border: 1px solid #198754 !important;
+    return sum % 10 === 0;
+}
+
+// VALIDATION
+document.getElementById("paymentForm").addEventListener("submit", function(e) {
+
+    let valid = true;
+
+    const card = document.getElementById("card");
+    const expiry = document.getElementById("expiry");
+    const cvv = document.getElementById("cvv");
+    const name = document.getElementById("name");
+
+    // RESET
+    [card, expiry, cvv, name].forEach(el => el.classList.remove("is-invalid"));
+
+    // CARD
+    if (!validateCard(card.value) || card.value.replace(/\s/g,'').length !== 16) {
+        card.classList.add("is-invalid");
+        valid = false;
     }
+
+    // EXPIRY
+    const parts = expiry.value.split("/");
+    if (parts.length !== 2) {
+        expiry.classList.add("is-invalid");
+        valid = false;
+    } else {
+        let mm = parseInt(parts[0]);
+        let yy = parseInt(parts[1]);
+
+        const now = new Date();
+        const cYear = now.getFullYear() % 100;
+        const cMonth = now.getMonth() + 1;
+
+        if (mm < 1 || mm > 12 || yy < cYear || (yy === cYear && mm < cMonth)) {
+            expiry.classList.add("is-invalid");
+            valid = false;
+        }
+    }
+
+    // CVV
+    if (!/^\d{3,4}$/.test(cvv.value)) {
+        cvv.classList.add("is-invalid");
+        valid = false;
+    }
+
+    // NAME
+    if (!/^[A-Za-z\s]{3,}$/.test(name.value)) {
+        name.classList.add("is-invalid");
+        valid = false;
+    }
+
+    if (!valid) {
+        e.preventDefault();
+    }
+
+});
+
+</script>
+
+<style>
+.is-invalid {
+    border: 2px solid red !important;
+}
 </style>
+
 {% endblock %}
+```

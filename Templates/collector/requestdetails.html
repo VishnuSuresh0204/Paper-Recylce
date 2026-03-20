@@ -215,7 +215,7 @@ bg-light text-muted
 <label class="form-label small fw-bold mb-1">Set Pickup Date</label>
 
 <div class="input-group input-group-sm mb-2">
-<input type="date" name="pickup_date" class="form-control" required>
+<input type="date" name="pickup_date" class="form-control" min="{{ today|date:'Y-m-d' }}" required>
 <button type="submit" class="btn btn-primary">
 <i class="fas fa-calendar-check"></i>
 </button>
