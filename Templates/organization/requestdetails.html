@@ -88,23 +88,41 @@ bg-secondary
 
 <hr>
 
-<p class="mb-1 small">
-<strong>Collector:</strong>
-{% if waste_item.collector %}
-{{ waste_item.collector.firstname }} {{ waste_item.collector.lastname }}
-{% else %}
-<span class="text-muted">Not Assigned</span>
-{% endif %}
-</p>
+                    <p class="mb-1 small">
+                        <strong>Collector:</strong>
+                        {% if waste_item.collector %}
+                        {{ waste_item.collector.firstname }} {{ waste_item.collector.lastname }}
+                        {% else %}
+                        <span class="text-muted italic">Not Assigned</span>
+                        {% endif %}
+                    </p>
 
-<p class="mb-3 small">
-<strong>Payment:</strong>
-{% if waste_item.collector_payment_status|lower == 'paid' %}
-<span class="text-success fw-bold">Paid</span>
-{% else %}
-<span class="text-muted">{{ waste_item.collector_payment_status|default:"Pending" }}</span>
-{% endif %}
-</p>
+                    <div class="p-2 mb-3 rounded bg-light border small">
+                        <div class="row g-1">
+                            <div class="col-6">
+                                <strong>User Pay:</strong>
+                                {% if waste_item.payment_status|lower == 'paid' %}
+                                <span class="text-success fw-bold"><i class="fas fa-check-circle"></i> Paid</span>
+                                {% else %}
+                                <span class="text-danger fw-bold"><i class="fas fa-clock"></i> Unpaid</span>
+                                {% endif %}
+                            </div>
+                            <div class="col-6">
+                                <strong>Collector:</strong>
+                                {% if waste_item.collector_payment_status|lower == 'paid' %}
+                                <span class="text-success fw-bold"><i class="fas fa-coins text-warning"></i> ₹{{ waste_item.amount }}</span>
+                                {% else %}
+                                <span class="text-muted">₹{{ waste_item.amount|default:"0" }} (P)</span>
+                                {% endif %}
+                            </div>
+                            {% if waste_item.pickup_date %}
+                            <div class="col-12 mt-1 pt-1 border-top">
+                                <strong><i class="far fa-calendar-alt text-primary me-1"></i>Pickup:</strong>
+                                <span class="text-primary fw-bold">{{ waste_item.pickup_date|date:"M d, Y" }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
 
 <div class="actions-section">
 
