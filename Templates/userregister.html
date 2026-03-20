@@ -3,22 +3,22 @@
 {% block content %}
 <style>
     .contact-one__form-input-box input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 16px;
-    background-color: antiquewhite;
-    box-sizing: border-box;
-}
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+        background-color: antiquewhite;
+        box-sizing: border-box;
+    }
 
-.contact-one__form-input-box input:focus {
-    outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-}
-
+    .contact-one__form-input-box input:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
 </style>
+
 <br>
 <h1 style="text-align: center;">User Register Form</h1>
 
@@ -26,54 +26,129 @@
     <div class="container" style="margin-left: 30%;">
         <div class="col-xl-6 col-lg-6">
             <div class="contact-one__right">
-                <!-- Registration Form -->
-                <form method="POST">
+
+                <form method="POST" onsubmit="return validateForm()">
                     {% csrf_token %}
                     <div class="row">
+
                         <!-- First Name -->
                         <div class="col-xl-6 col-lg-6 col-md-6">
                             <div class="contact-one__form-input-box">
-                                <input type="text" placeholder="First Name" name="firstname" required>
+                                <input 
+                                    type="text" 
+                                    name="firstname" 
+                                    placeholder="First Name" 
+                                    required
+                                    pattern="[A-Za-z]{2,}"
+                                    title="First name must contain only letters (min 2 characters)"
+                                >
                             </div>
                         </div>
+
                         <!-- Last Name -->
                         <div class="col-xl-6 col-lg-6 col-md-6">
                             <div class="contact-one__form-input-box">
-                                <input type="text" placeholder="Last Name" name="lastname" required>
+                                <input 
+                                    type="text" 
+                                    name="lastname" 
+                                    placeholder="Last Name" 
+                                    required
+                                    pattern="[A-Za-z]{1,}"
+                                    title="Last name must contain only letters"
+                                >
                             </div>
                         </div>
+
                         <!-- Email -->
                         <div class="col-xl-6 col-lg-6 col-md-6">
                             <div class="contact-one__form-input-box">
-                                <input type="email" placeholder="Email Address" name="email" required>
+                                <input 
+                                    type="email" 
+                                    name="email"
+                                    placeholder="Email Address"
+                                    required
+                                    pattern="^[a-zA-Z0-9._%+-]+@gmail\.com$"
+                                    title="Only Gmail addresses are allowed (example@gmail.com)"
+                                    oninvalid="this.setCustomValidity('Please enter a valid Gmail address')"
+                                    oninput="this.setCustomValidity('')"
+                                >
                             </div>
                         </div>
+
                         <!-- Address -->
                         <div class="col-xl-6 col-lg-6 col-md-6">
                             <div class="contact-one__form-input-box">
-                                <input type="text" placeholder="Address" name="address" required>
+                                <input 
+                                    type="text" 
+                                    name="address" 
+                                    placeholder="Address" 
+                                    required
+                                    minlength="5"
+                                    title="Address must be at least 5 characters long"
+                                >
                             </div>
                         </div>
+
                         <!-- Password -->
                         <div class="col-xl-6 col-lg-6 col-md-6">
                             <div class="contact-one__form-input-box">
-                                <input type="password" placeholder="Password" name="password" required>
+                                <input 
+                                    type="password" 
+                                    name="password" 
+                                    id="password"
+                                    placeholder="Password" 
+                                    required
+                                    pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@#$%^&+=]{6,}$"
+                                    title="Password must be at least 6 characters and include letters and numbers"
+                                >
                             </div>
                         </div>
+
+                        <!-- Confirm Password -->
+                        <div class="col-xl-6 col-lg-6 col-md-6">
+                            <div class="contact-one__form-input-box">
+                                <input 
+                                    type="password" 
+                                    id="confirm_password"
+                                    placeholder="Confirm Password" 
+                                    required
+                                >
+                            </div>
+                        </div>
+
                     </div>
+
                     <!-- Submit Button -->
                     <div class="row">
                         <div class="col-xl-12">
                             <div class="contact-one__btn-box">
-                                <button type="submit" class="thm-btn contact-one__btn">Register</button>
+                                <button type="submit" class="thm-btn contact-one__btn">
+                                    Register
+                                </button>
                             </div>
                         </div>
                     </div>
+
                 </form>
+
             </div>
         </div>
     </div>
 </section>
 
+<!-- JS Validation -->
+<script>
+function validateForm() {
+    let password = document.getElementById("password").value;
+    let confirmPassword = document.getElementById("confirm_password").value;
+
+    if (password !== confirmPassword) {
+        alert("Passwords do not match!");
+        return false;
+    }
+
+    return true;
+}
+</script>
 
 {% endblock %}

@@ -68,6 +68,7 @@ urlpatterns = [
     path('editproduct/', views.editproduct, name='editproduct'),
 
     path('userview/', views.user_view, name='user_view'),
+    path('uservieworg/', views.uservieworg, name='uservieworg'),
     
     path('collector_view/', views.collector_view, name='collector_view'),
     path('accept_collector/<int:id>/', views.accept_collector, name='accept_collector'),

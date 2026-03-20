@@ -57,7 +57,7 @@
                         <div class="col-md-6">
                             <label class="form-label"><i class="fas fa-user me-2"></i>Your Name</label>
                             <input type="text" name="name" class="form-control form-control-lg"
-                                placeholder="Enter your full name" required>
+                                placeholder="Enter your full name" value="{{ user.firstname }} {{ user.lastname }}" required>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label"><i class="fas fa-phone me-2"></i>Phone Number</label>
@@ -78,9 +78,9 @@
                         <div class="col-12">
                             <label class="form-label"><i class="fas fa-address-card me-2"></i>Detailed Address</label>
                             <textarea name="address" class="form-control" rows="3"
-                                placeholder="Street name, area details..." required></textarea>
+                                placeholder="Street name, area details..." required>{{ user.address }}</textarea>
                         </div>
-                        <div class="col-md-12">
+                        <div class="col-md-6">
                             <label class="form-label"><i class="fas fa-trash me-2"></i>Waste Type</label>
                             <select name="waste_type" required class="form-select form-select-lg">
                                 <option value="" disabled selected>Select Waste Type</option>
@@ -90,6 +90,11 @@
                                 <option value="Glass">Glass</option>
                                 <option value="Mix">Mix</option>
                             </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label"><i class="fas fa-building me-2"></i>Selected Organizer</label>
+                            <input type="text" class="form-control form-control-lg bg-light" value="{{ org.firstname }} {{ org.lastname }}" readonly>
+                            <input type="hidden" name="organizer_id" value="{{ org.id }}">
                         </div>
                         <div class="col-12">
                             <label class="form-label"><i class="fas fa-info-circle me-2"></i>Description / Notes
