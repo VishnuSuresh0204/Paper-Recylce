@@ -26,6 +26,7 @@ class Organizer(models.Model):
 
 class Collector(models.Model):
     user = models.ForeignKey(Login, on_delete=models.CASCADE,null=True)
+    organizer = models.ForeignKey(Organizer, on_delete=models.CASCADE, null=True, blank=True)
     firstname = models.CharField(max_length=100)
     lastname = models.CharField(max_length=100)
     email = models.EmailField(unique=True)

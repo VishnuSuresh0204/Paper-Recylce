@@ -69,23 +69,36 @@ def organizerreg(request):
     return render(request, "organizerregister.html")
 
 def collectorreg(request):
+    organizers = Organizer.objects.filter(status='approved')
     if request.method == "POST":
         firstname = request.POST.get("firstname")
         lastname = request.POST.get("lastname")
         email = request.POST.get("email")
         password = request.POST.get("password")
         idproof = request.FILES.get('idproof')
+        organizer_id = request.POST.get("organizer_id")
 
-        if UserReg.objects.filter(email=email).exists():
+        if Login.objects.filter(email=email).exists():
             messages.info(request, "Email already exists")
-            return render(request, "organizerregister.html") 
+            return render(request, "coll_reg.html", {'organizers': organizers}) 
         else:
             user = Login.objects.create(email=email, password=password, userType='Collector')
-            Collector.objects.create(user=user, firstname=firstname, lastname=lastname, email=email,idproof=idproof, password=password)
+            org = None
+            if organizer_id:
+                org = Organizer.objects.get(id=organizer_id)
+            Collector.objects.create(
+                user=user, 
+                organizer=org, 
+                firstname=firstname, 
+                lastname=lastname, 
+                email=email,
+                idproof=idproof, 
+                password=password
+            )
             messages.info(request, "Registration successful")
             return redirect("/login/") 
 
-    return render(request, "coll_reg.html")
+    return render(request, "coll_reg.html", {'organizers': organizers})
 
 
 def login(request):
@@ -154,6 +167,13 @@ def vieworg(request):
     orgz = Organizer.objects.all()
     return render(request,"admin/organizerview.html",{'orgz':orgz})
 
+def uservieworg(request):
+    uid = request.session.get('uid')
+    if not uid:
+        return redirect('/login/')
+    orgz = Organizer.objects.filter(status='approved')
+    return render(request,"user/view_organizers.html",{'orgz':orgz})
+
 def accept(request):
     if 'admin_id' not in request.session:
         return redirect('/login/')
@@ -183,11 +203,17 @@ def reject(request):
 
 def submitrequest(request):
     uid = request.session["uid"]
-    print(uid)
-    user_id = request.POST.get('id')
     user = UserReg.objects.get(id=uid)
-    print(user,"&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
     
+    # Pre-select organizer if passed via GET
+    selected_org_id = request.GET.get('org_id')
+    
+    if not selected_org_id:
+        messages.info(request, "Please select an organizer first.")
+        return redirect('/uservieworg/')
+
+    org = get_object_or_404(Organizer, id=selected_org_id)
+
     if request.method == "POST":
         name = request.POST.get("name")
         address = request.POST.get("address")
@@ -197,13 +223,25 @@ def submitrequest(request):
         waste_type = request.POST.get("waste_type")
         description = request.POST.get("description")
 
-        a = WasteCollectionRequest.objects.create(user=user,name=name,address=address,house_number=house_number,
-                                              location=location,phone_number=phone_number,waste_type=waste_type,description=description,
+        WasteCollectionRequest.objects.create(
+            user=user,
+            name=name,
+            address=address,
+            house_number=house_number,
+            location=location,
+            phone_number=phone_number,
+            waste_type=waste_type,
+            description=description,
+            organizer=org
         )
 
+        messages.success(request, "Request submitted successfully.")
         return redirect('/userrequestdetails/')
 
-    return render(request, "user/weastrequest.html")
+    return render(request, "user/weastrequest.html", {
+        'org': org,
+        'user': user,
+    })
 
 def edit_request(request, request_id):
     uid = request.session.get('uid')
@@ -249,8 +287,8 @@ def requestdetails(request):
         messages.error(request, "Organizer profile not found.")
         return redirect('/login/')
 
-    # Fetch requests that are either unassigned OR assigned to this specific organizer
-    reqs = WasteCollectionRequest.objects.filter(Q(organizer=organizer) | Q(organizer__isnull=True))
+    # Fetch requests specifically assigned to this organizer
+    reqs = WasteCollectionRequest.objects.filter(organizer=organizer)
 
     # Status counts for summary cards
     pending_count = reqs.filter(status__iexact='Pending').count()
@@ -258,8 +296,8 @@ def requestdetails(request):
     picked_count = reqs.filter(status__iexact='Picked Up').count()
     rejected_count = reqs.filter(status__iexact='rejected').count()
 
-    # Fetch all approved collectors for the assignment dropdown
-    collectors = Collector.objects.filter(status='approved')
+    # Fetch approved collectors registered under this organizer
+    collectors = Collector.objects.filter(status='approved', organizer=organizer)
 
     return render(request, "organization/requestdetails.html", {
         'req': reqs,
@@ -282,8 +320,7 @@ def assign_collector(request):
             return redirect('/login/')
 
         waste_request = get_object_or_404(WasteCollectionRequest, id=request_id)
-        collector = get_object_or_404(Collector, id=collector_id)
-
+        
         # Security check: Ensure logged in user is the organizer profile
         login_user = Login.objects.filter(id=uid).first()
         organizer = Organizer.objects.filter(user=login_user).first()
@@ -291,6 +328,9 @@ def assign_collector(request):
         if not organizer:
             messages.error(request, "Organizer profile not found.")
             return redirect('/login/')
+
+        # Verify collector belongs to this organizer
+        collector = get_object_or_404(Collector, id=collector_id, organizer=organizer)
 
         if waste_request.organizer and waste_request.organizer != organizer:
             messages.error(request, "You are not authorized to assign this request.")
@@ -487,7 +527,7 @@ def user_view(request):
 
 
 def collector_view(request):
-    collectors = Collector.objects.all()
+    collectors = Collector.objects.all().select_related('organizer')
     return render(request, 'admin/collectorview.html', {'collectors': collectors})
 
 def accept_collector(request, id):
@@ -571,7 +611,17 @@ def addproduct(request):
 
 def editproduct(request):
     id = request.GET.get('id')
+    uid = request.session.get('uid')
+    if not uid:
+        return redirect('/login/')
+    
     product = get_object_or_404(RecycledProduct, id=id)
+    
+    # Ownership Check
+    if product.org.user_id != uid:
+        messages.error(request, "You are not authorized to edit this product.")
+        return redirect('/productlist/')
+
     if request.method == 'POST':
         product.product_name = request.POST['product_name']
         product.description = request.POST.get('product_description', '')
@@ -586,7 +636,7 @@ def editproduct(request):
 
 def productlist(request):
     uid = request.session["uid"]
-    pro = RecycledProduct.objects.filter()  
+    pro = RecycledProduct.objects.filter(org__user_id=uid)  
     return render(request,"organization/productlist.html",{'pro':pro})
 
 def userproductlist(request):
@@ -597,8 +647,12 @@ def userproductlist(request):
 def deleteimg(request):
     id = request.GET.get('id')
     uid = request.session['uid']
-    RecycledProduct.objects.filter(id=id).delete()
-    messages.info(request, "Successfully removed")
+    # Filter by id and org__user_id to ensure only the owner can delete
+    deleted_count, _ = RecycledProduct.objects.filter(id=id, org__user_id=uid).delete()
+    if deleted_count > 0:
+        messages.info(request, "Successfully removed")
+    else:
+        messages.error(request, "You are not authorized to delete this product or it does not exist.")
     return redirect('/productlist/')
 
 
@@ -659,6 +713,11 @@ def update_pickup_date(request, request_id):
             messages.error(request, "You are not authorized to schedule this pickup.")
             return redirect("coll_requestdetails")
 
+        # Backend Validation: Prevent past dates
+        if pickup_date < str(date.today()):
+            messages.error(request, "Pickup date cannot be in the past.")
+            return redirect("coll_requestdetails")
+
         waste_request.pickup_date = pickup_date
         waste_request.status = "Dated"
 
@@ -694,7 +753,8 @@ def userorderdetails(request):
 
 def orderdetailsorg(request):
     uid = request.session['uid'] 
-    abc = Order.objects.select_related('product').all()
+    # Only show orders for products belonging to this organizer
+    abc = Order.objects.select_related('product').filter(product__org__user_id=uid)
     return render(request,"organization/orderdetails.html",{'abc':abc})
 
 def payment(request):
@@ -715,8 +775,17 @@ def payment(request):
 
 def shipped(request):
     id = request.GET.get("id")
-    order = Order.objects.filter(id=id).first()
+    uid = request.session.get('uid')
+    if not uid:
+        return redirect('/login/')
+        
+    order = Order.objects.select_related('product__org').filter(id=id).first()
     if order:
+        # Ownership Check
+        if order.product.org.user_id != uid:
+            messages.error(request, "You are not authorized to ship this order.")
+            return redirect('/orderdetailsorg/')
+            
         if order.status != "Pending":
             messages.warning(request, f"Order {id} is already {order.status}.")
             return redirect('/orderdetailsorg/')
@@ -727,8 +796,17 @@ def shipped(request):
 
 def delivered(request):
     id = request.GET.get("id")
-    order = Order.objects.filter(id=id).first()
+    uid = request.session.get('uid')
+    if not uid:
+        return redirect('/login/')
+        
+    order = Order.objects.select_related('product__org').filter(id=id).first()
     if order:
+        # Ownership Check
+        if order.product.org.user_id != uid:
+            messages.error(request, "You are not authorized to deliver this order.")
+            return redirect('/orderdetailsorg/')
+            
         if order.status != "Shipped":
             messages.warning(request, f"Order {id} is {order.status}. Must be Shipped first.")
             return redirect('/orderdetailsorg/')
@@ -745,6 +823,11 @@ def add_request_feedback(request, request_id):
     
     waste_request = get_object_or_404(WasteCollectionRequest, id=request_id, user_id=uid)
     
+    # Restrict feedback to Completed (Picked Up) requests only
+    if waste_request.status.lower() != 'picked up':
+        messages.error(request, "Feedback can only be provided after the request has been picked up.")
+        return redirect('/userrequestdetails/')
+
     if request.method == 'POST':
         feedback_text = request.POST.get('feedback_text')
         if feedback_text:
@@ -882,16 +965,40 @@ def coll_requestdetails(request):
 
     # Only show requests assigned to this collector
     req = WasteCollectionRequest.objects.filter(collector=collector)
-    return render(request, "collector/requestdetails.html", {'req': req})
+    today = date.today()
+    return render(request, "collector/requestdetails.html", {
+        'req': req,
+        'today': today
+    })
 
 def coll_accept(request):
-    req = Collector.objects.all()
+    uid = request.session.get('uid')
+    if not uid:
+        return redirect('/login/')
+    
+    login_user = Login.objects.filter(id=uid).first()
+    organizer = Organizer.objects.filter(user=login_user).first()
+    
+    if not organizer:
+        messages.error(request, "Organizer profile not found.")
+        return redirect('/login/')
+        
+    req = Collector.objects.filter(organizer=organizer)
     return render(request,"organization/requestdetails_col.html",{'req':req})
 
 def acceptwaste_col(request):
     id = request.GET.get("id")
+    uid = request.session.get('uid')
+    
+    login_user = Login.objects.filter(id=uid).first()
+    organizer = Organizer.objects.filter(user=login_user).first()
+    
     user = Collector.objects.filter(id=id).first()
     if user:
+        if user.organizer != organizer:
+            messages.error(request, "You are not authorized to approve this collector.")
+            return redirect('/coll_accept/')
+            
         if user.status != "pending":
             messages.warning(request, f"Collector {id} is already {user.status}.")
             return redirect('/coll_accept/')
@@ -902,14 +1009,23 @@ def acceptwaste_col(request):
 
 def rejectwaste_col(request):
     id = request.GET.get("id")
+    uid = request.session.get('uid')
+    
+    login_user = Login.objects.filter(id=uid).first()
+    organizer = Organizer.objects.filter(user=login_user).first()
+    
     user = Collector.objects.filter(id=id).first()
     if user:
+        if user.organizer != organizer:
+            messages.error(request, "You are not authorized to reject this collector.")
+            return redirect('/coll_accept/')
+            
         if user.status != "pending":
             messages.warning(request, f"Collector {id} is already {user.status}.")
             return redirect('/coll_accept/')
         user.status = "rejected" 
         user.save() 
-    messages.info(request,'User will Rejected Success')
+        messages.info(request,'User will Rejected Success')
     return redirect('/coll_accept/')
 
 def rejectwaste_adq(request):
